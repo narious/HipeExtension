@@ -1,0 +1,10 @@
+
+CC = gcc
+HTMLTOHIPE_DIR = HtmlToHipe/
+CSSTOHIPE_DIR = CssToHipe/
+CFLAGS = -Wall -g -l -I external/gtest/googletest/include 
+all: 
+
+
+clean:
+	@echo "cleaning up..."

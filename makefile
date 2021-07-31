@@ -1,7 +1,7 @@
 
 CC = g++
 GTEST_DIR = external/gtest/googletest/include
-CFLAGS = -Wall -g -LHtmlToHipe/src/ -L$(GTEST_DIR) -IHtmlToHipe/src/ -I$(GTEST_DIR)
+CFLAGS = -Wall -g -IHtmlToHipe/src/ -LHtmlToHipe/src/ -I$(GTEST_DIR) -L/usr/local/lib/googletest/libgtest.a 
 
 TARGET = HtmlCsstoHipe
 

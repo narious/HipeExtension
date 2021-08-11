@@ -1,4 +1,14 @@
 
+#include "gumbo.h"
 
-static char * readFile(char* filename);
+struct parseTree 
+{
+    GumboOutput* tree;
+};
+
+
+static parseTree parse(char* htmlstring)
+{
+    return parseTree(gumbo_parse(htmlstring));
+}
 

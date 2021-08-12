@@ -34,6 +34,7 @@ int main(int argc, char* arcv[])
         // pass css file into html to hipe && output file
         csstohipe(cssstring, outputFile);
 
+        outputFile.close();
         return 0;
     }
 

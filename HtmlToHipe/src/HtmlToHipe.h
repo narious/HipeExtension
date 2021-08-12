@@ -4,7 +4,8 @@
 
 static void htmltohipe(std::string& htmlfile, std::ostream& outputfile)
 {
-    
+    outputfile << "I am html to hipe!\n";
+
     // Opens up the file into a varaible
 
     // Sends it to htmlparser to pasrse and gets the parseTree
@@ -15,4 +16,5 @@ static void htmltohipe(std::string& htmlfile, std::ostream& outputfile)
         // for each tag convert it to appropriate hipe text
 
     // Close file and finish
+
 }

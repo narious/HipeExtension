@@ -1,13 +1,13 @@
+#include <fstream>
 
 
-
-void convert(char* filename)
+static void csstohipe(std::ifstream& htmlfile, std::ostream& outputfile)
 {
-    // Reads the css file and converts to a Css Tree
+    // Reads the css file 
 
-    // Open the previous file used for html to hipe
+    // reads the tagname id and class string
 
-    // Loops through the styles
-        // Find the tag and add the styles
+    // returns a string of the appropriate css
 
 }
+

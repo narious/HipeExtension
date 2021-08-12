@@ -1,6 +1,7 @@
 #include "HtmlParser.h"
+#include <fstream>
 
-static void convert(char * filename)
+static void htmltohipe(std::ifstream& htmlfile, std::ostream& outputfile)
 {
     // Opens up the file into a varaible
 
@@ -10,6 +11,6 @@ static void convert(char * filename)
 
     // Loops through the parse tree 
         // for each tag convert it to appropriate hipe text
-        
+
     // Close file and finish
 }

@@ -1,7 +1,7 @@
 #include <fstream>
+#include <string>
 
-
-static void csstohipe(std::ifstream& htmlfile, std::ostream& outputfile)
+static void csstohipe(std::string& cssstring, std::ostream& outputfile)
 {
     // Reads the css file 
 

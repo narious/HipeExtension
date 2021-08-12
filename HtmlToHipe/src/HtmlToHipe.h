@@ -1,8 +1,10 @@
-#include "HtmlParser.h"
 #include <fstream>
+#include <string>
+#include "gumbo.h"
 
-static void htmltohipe(std::ifstream& htmlfile, std::ostream& outputfile)
+static void htmltohipe(std::string& htmlfile, std::ostream& outputfile)
 {
+    
     // Opens up the file into a varaible
 
     // Sends it to htmlparser to pasrse and gets the parseTree

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Hello World</h1>
+    <div id="important-box"></div>
+</body>
+<script src="main.js"></script>
+</html>body
+{
+    background-color:darkslateblue;
+}
+
+h1
+{
+    color: white;
+    text-align: center;
+}
+
+#important-box
+{
+    background-color: white;
+    width: 500px;
+    height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 5px solid black;
+}

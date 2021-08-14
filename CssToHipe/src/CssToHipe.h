@@ -3,7 +3,7 @@
 
 static void csstohipe(std::string& cssstring, std::ostream& outputfile)
 {
-    outputfile << "I am css to hipe\n";
+    outputfile << cssstring;
     // Reads the css file 
 
     // reads the tagname id and class string

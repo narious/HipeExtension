@@ -2,9 +2,11 @@
 #include <string>
 #include "gumbo.h"
 
-static void htmltohipe(std::string& htmlfile, std::ostream& outputfile)
+static void htmltohipe(std::string& htmlstring, std::ostream& outputfile)
 {
-    outputfile << "I am html to hipe!\n";
+    outputfile << htmlstring;
+
+    GumboOutput* myoutput = gumbo_parse(htmlstring.c_str());
 
     // Opens up the file into a varaible
 
@@ -16,5 +18,8 @@ static void htmltohipe(std::string& htmlfile, std::ostream& outputfile)
         // for each tag convert it to appropriate hipe text
 
     // Close file and finish
+
+
+    gumbo_destroy_output(&kGumboDefaultOptions, myoutput);
 
 }

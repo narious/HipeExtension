@@ -8,7 +8,7 @@ OBJS= main.o
 HOBJS=
 CC=g++
 CFLAGS=-c
-LFLAGS= #-lgtest -lgtest_main -lpthread
+LFLAGS= -lgumbo #-lgtest -lgtest_main -lpthread
 INC=
 
 main: $(OBJS) 

@@ -6,12 +6,12 @@
 #include "CssToHipe/src/CssToHipe.h"
 
 // Expects a filename to be passed into this function
-int main(int argc, char* arcv[])
+int main(int argc, char* argv[])
 {
     if (argc > 1)
     {
-        char* htmlfilename = arcv[1];
-        char* cssfilename = arcv[2];
+        char* htmlfilename = argv[1];
+        char* cssfilename = argv[2];
 
         // create output file
         std::ofstream outputFile("output.txt");

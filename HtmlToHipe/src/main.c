@@ -39,8 +39,8 @@ int filesz(int fd)
  */
 char *falloc(int fd)
 {
-	char *s;
 	int fsz;
+	char *s;
 
 	flock(fd, LOCK_EX);
 
@@ -48,6 +48,7 @@ char *falloc(int fd)
 	lseek(fd, 0, SEEK_SET);
 	// TODO add null term until determine whether it's needed
 	s = malloc((fsz+1)*sizeof(char));  
+	read(fd, (void *)s, fsz);
 	s[fsz] = '\0';
 
 	flock(fd, LOCK_UN);
@@ -60,8 +61,15 @@ int main(void)
 	int fd;
 	char *html;
 	GumboOutput *g;
+	char *fpath = "data/square.html";
 
-	fd = open("../data/hipe_calc.html", O_RDONLY);
+	fd = open(fpath, O_RDONLY);
+
+	if (fd == -1) {
+		perror(fpath);
+		exit(EXIT_FAILURE);
+	}
+
 	html = falloc(fd);
 	close(fd);
 	// TODO how does gumbo parse a string, does it stop at a null term character

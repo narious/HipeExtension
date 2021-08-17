@@ -50,7 +50,7 @@ static bool write_body_tags_aux(GumboNode *n, int fd, int curid)
 		// 0th ID is for the body tag. When locs[i] evaluates to 0 the tag is appended to the body
 		// element by default.
 		if (curid > 0) {
-			dprintf(fd, "\tloc = hipe_send(session, HIPE_OP_APPEND_TAG, 0, locs[%d], \"%s\");\n",
+			dprintf(fd, "\tloc = append_tag_getLoc(session, plocs[%d], \"%s\", \"\");\n",
 				curid, gumbo_normalized_tagname(e->tag));
 		}
 
@@ -83,11 +83,14 @@ static void write_body_tags(GumboNode *n, int fd)
 	// Allocate variables.
 	dprintf(fd, "\thipe_loc loc;\n");
 	// Array of parent locations where an element at index i is the hipe_loc of the parent
-	// node of node with ID i. IDs start at 1.
-	dprintf(fd, "\thipe_loc plocs[%d];\n", nnodes+1);
-	dprintf(fd, "\tmemset((void *)plocs, 0, %d*sizeof(hipe_loc));\n", nnodes+1);
+	// node of node with ID i.
+	dprintf(fd, "\thipe_loc plocs[%d];\n", nnodes);
+	dprintf(fd, "\tsession = hipe_open_session(0, 0, 0, \"test\");\n");
+	dprintf(fd, "\tif (!session)\n");
+	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
+	dprintf(fd, "\tloc = 0;\n");
 
-	write_body_tags_aux(n, fd, 1);
+	write_body_tags_aux(n, fd, 0);
 }
 
 /**

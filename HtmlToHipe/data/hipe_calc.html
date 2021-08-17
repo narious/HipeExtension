@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title> Calculator </title>
+    <link ref="stylesheet" href="/home/firer/Documents/codes/fireland/index.css">
+    <style>
+    body {
+        height:100%;
+        margin:0;
+        background-color:grey;
+        padding:1% 1% 0 1%;
+        overflow:hidden;
+    }
+
+    button {
+        height:100%;
+        width:100%;
+        display:block;
+        font-size:large;
+        color: black;
+        background-color:dimgrey;
+        box-shadow:-1px -1px 1px cyan;
+        border-color:cadetblue;
+        border-radius:3px;
+        border-width:1px;font-size:170%;
+    }
+
+    button:active {
+        background-color:grey;}
+
+    table{
+        position:absolute;
+        width: 98%;
+        height: 98%;
+    }
+
+    td{
+        width:25%;}
+
+    #mantissa{
+        text-align:right;
+        border:inset 2px;
+        border-radius:5px;
+        background-color:aquamarine;
+        font-size:150%;
+        color:black;}
+    </style>
+  </head>
+  <body>
+      <table>
+          <tbody>
+              <tr>
+                  <td id="mantissa" colspan=4>
+                  </td>
+              </tr>
+              <tr>
+                  <td> <button id="oC">C</button> </td>
+                  <td> <button id="oE">CE</button> </td>
+                  <td> <button id="oD">&div;</button></td>
+                  <td> <button id="oT">&times;</button></td>
+              </tr>
+              <tr>
+                  <td> <button id="n7">7</button> </td>
+                  <td> <button id="n8">8</button> </td>
+                  <td> <button id="n9">9</button> </td>
+                  <td> <button id="oM">&minus;</button> </td>
+              </tr>
+              <tr>
+                  <td> <button id="n4">4</button></td>
+                  <td> <button id="n5">5</button></td>
+                  <td> <button id="n6">6</button></td>
+                  <td> <button id="oA">+</button></td>
+              </tr>
+              <tr>
+                  <td> <button id="n1">1</button> </td>
+                  <td> <button id="n2">2</button> </td>
+                  <td> <button id="n3">3</button> </td>
+                  <td rowspan=2> <button id="oR">=</button> </td>
+              </tr>
+              <tr>
+                  <td colspan=2> <button id="n0">0</button> </td>
+                  <td> <button id="oP">.</button> </td>
+              </tr>
+          <tbody>
+      </table>
+  </body>
+</html>

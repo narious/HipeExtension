@@ -12,8 +12,8 @@ void mygumbo_write_hipe(GumboOutput *g, int fd)
 {
 	// Write the gumbo tags first so that tags can be located in hipe when
 	// writing attributes.
-	mygumbo_write_tags(g->document, fd);
-	mygumbo_write_attr(g->document, fd);
+	mygumbo_write_tags(g->root, fd);
+	mygumbo_write_attr(g->root, fd);
 }
 
 int main(void)

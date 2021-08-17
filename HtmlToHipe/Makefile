@@ -7,7 +7,7 @@ TOBJS=build/GumboTest.o
 # README in parent dir).
 CC=g++
 CFLAGS=-c
-LFLAGS=-lgtest -lgtest_main -lpthread
+LFLAGS=-lgtest -lgtest_main -lpthread -lgumbo
 INC=
 
 test: $(TOBJS) 

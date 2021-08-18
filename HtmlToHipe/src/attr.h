@@ -143,6 +143,15 @@ static std::string handle_unknown_tag(GumboStringPiece *text)
   tagname = std::string(gsp.data, gsp.length);
   return tagname; 
 }
+#include <gumbo.h>
 
-
+/**
+ * gumbo_write_attr - Write all HTML tag attributes in a Gumbo representation of
+ *	a HTML file as hipe client send instructions.
+ * @root: root node of Gumbo representation of HTML file
+ * @fd: file descriptor to write hipe client send instructions to
+ *
+ * TODO Michael implement
+ */
+void mygumbo_write_attr(GumboNode *root, int fd);
 #endif

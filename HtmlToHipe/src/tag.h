@@ -7,6 +7,7 @@
 
 #include <gumbo.h>
 #include <stdio.h>
+#include <unistd.h>
 
 /**
  * gumbo_write_tags - Write all HTML tags in a Gumbo representation of
@@ -16,6 +17,6 @@
  *
  * TODO Petar implement
  */
-void mygumbo_write_tags(GumboNode *root, int fd);
+void mygumbo_write_tags(GumboNode *root, int fd, char *html);
 
 #endif

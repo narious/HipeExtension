@@ -21,6 +21,9 @@ void write_head(int fd)
 
 void write_tail(int fd)
 {
+	// TODO can't close application with buttons when there's an infinite loop
+	dprintf(fd, "\tfor (;;)\n");
+	dprintf(fd, "\t\t;\n");
 	dprintf(fd, "\thipe_close_session(session);\n");
 	dprintf(fd, "\treturn 0;\n");
 	dprintf(fd, "}");
@@ -31,12 +34,12 @@ void write_tail(int fd)
  *	instructions to a file
  * @g: gumbo output with 
  */
-void mygumbo_write_hipe(GumboOutput *g, int fd)
+void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
 {
 	write_head(fd);
 	// Write the gumbo tags first so that tags can be located in hipe when
 	// writing attributes.
-	mygumbo_write_tags(g->root, fd);
+	mygumbo_write_tags(g->root, fd, html);
 	mygumbo_write_attr(g->root, fd);
 	write_tail(fd);
 }
@@ -97,7 +100,7 @@ int main(void)
 	// or some other special delimiter?
 	g = gumbo_parse(html);  // TODO handle errors
 
-	mygumbo_write_hipe(g, STDOUT_FILENO);
+	mygumbo_write_hipe(g, STDOUT_FILENO, html);
 
 	gumbo_destroy_output(&kGumboDefaultOptions, g);
 	free(html);  // Free last since buffer is supposed to live as long as gumbo is used.

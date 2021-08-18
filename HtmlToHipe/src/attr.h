@@ -143,7 +143,6 @@ static std::string handle_unknown_tag(GumboStringPiece *text)
   tagname = std::string(gsp.data, gsp.length);
   return tagname; 
 }
-#include <gumbo.h>
 
 /**
  * gumbo_write_attr - Write all HTML tag attributes in a Gumbo representation of
@@ -154,4 +153,5 @@ static std::string handle_unknown_tag(GumboStringPiece *text)
  * TODO Michael implement
  */
 void mygumbo_write_attr(GumboNode *root, int fd);
+
 #endif

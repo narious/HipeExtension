@@ -2,16 +2,7 @@
 #include <string>
 #include "gumbo.h"
 
-static void traverse_and_print(GumboNode* node, std::ostream& outputfile)
-{
-    if (node->type != GUMBO_NODE_ELEMENT) return;
-    printf("%s", node->v.text);
-    GumboVector* children = &node->v.element.children;
-    for (unsigned int i = 0; i < children->length; i ++) {
-        (GumboNode*)children[i]->v.text;
-    }
-
-}
+#include "attr.h"
 
 
 static void htmltohipe(std::string& htmlstring, std::ostream& outputfile)
@@ -23,10 +14,11 @@ static void htmltohipe(std::string& htmlstring, std::ostream& outputfile)
     
     // An array relating to the DOM's document
     GumboNode* gumbo_document = gumbo_output->document;
-
-
     // Open an output file
 
+    printf("======OUTPUT OF TRAVERSE====\n");
+    printf("%s", traverse(gumbo_document, 0, " ").c_str());
+    
     // Loops through the parse tree 
         // for each tag convert it to appropriate hipe text
 

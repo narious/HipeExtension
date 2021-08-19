@@ -4,13 +4,13 @@
 #include "gumbo.h"
 
 void mygumbo_write_attr(GumboNode *root, int fd) {
-
+  traverse(root, fd);
 }
 
 
 // Forward declarations
-static void traverse_attrs(GumboNode* node, int lvl, const char * indent_chars);
-static void hipe_build_attrs(GumboAttribute* at);
+static void traverse_attrs(GumboNode* node, int fd);
+static void hipe_build_attrs(GumboAttribute* at, const char * hipeLoc, int fd);
 static const char* get_tag_name(GumboNode *node);
 static const char* handle_unknown_tag(GumboStringPiece *text);
 
@@ -18,12 +18,12 @@ static const char* handle_unknown_tag(GumboStringPiece *text);
 /*
 Traverses the tree and sends the attributes
 */
-static void traverse(GumboNode* node, int lvl, const char * indent_chars)
+static void traverse(GumboNode* node, int fd)
 {
 
   // special case the document node
   if (node->type == GUMBO_NODE_DOCUMENT) {
-    traverse_attrs(node, lvl+1, indent_chars);
+    traverse_attrs(node, fd);
   }
     
     const char * tagname = get_tag_name(node);
@@ -37,11 +37,11 @@ static void traverse(GumboNode* node, int lvl, const char * indent_chars)
     }
 
     // Traverses down the children
-    traverse_attrs(node, lvl+1, indent_chars);
+    traverse_attrs(node, fd);
 }
 
 
-static void traverse_attrs(GumboNode* node, int lvl, const char * indent_chars)
+static void traverse_attrs(GumboNode* node, int fd)
 {
 
   const char * tagname = get_tag_name(node);
@@ -51,7 +51,7 @@ static void traverse_attrs(GumboNode* node, int lvl, const char * indent_chars)
   for (unsigned int i = 0; i < children->length; ++i) {
     GumboNode* child = (GumboNode*)(children->data[i]);
     if ((child->type == GUMBO_NODE_ELEMENT) || (child->type == GUMBO_NODE_TEMPLATE)) {
-      traverse(child, lvl, indent_chars);
+      traverse(child, fd);
     } 
     else if (child->type == GUMBO_NODE_WHITESPACE) {} 
     else if (child->type != GUMBO_NODE_COMMENT) {} 
@@ -64,13 +64,14 @@ static void traverse_attrs(GumboNode* node, int lvl, const char * indent_chars)
 Takes an attribute, determines the location and adds it to the file
 hipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, mantissa, 2, "colspan", "4");
 */
-static void hipe_build_attrs(GumboAttribute* at)
+static void hipe_build_attrs(GumboAttribute* at, const char * hipeLoc, int fd)
 {
 
   const char * attrname = at->name;
   const char * attrvalue = at->value;
+  dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, %s, 2, \"%s\", \"%s\");\n", 
+  hipeLoc, attrname, attrvalue);
 
-  // Write to the file with location
 }
 
 // From a node get the tagname

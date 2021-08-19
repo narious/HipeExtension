@@ -7,14 +7,6 @@ void mygumbo_write_attr(GumboNode *root, int fd) {
   traverse(root, fd);
 }
 
-
-// Forward declarations
-static void traverse_attrs(GumboNode* node, int fd);
-static void hipe_build_attrs(GumboAttribute* at, const char * hipeLoc, int fd);
-static const char* get_tag_name(GumboNode *node);
-static const char* handle_unknown_tag(GumboStringPiece *text);
-
-
 /*
 Traverses the tree and sends the attributes
 */

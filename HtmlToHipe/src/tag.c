@@ -131,9 +131,9 @@ static bool write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 		int i, j;
 		GumboElement *e = (GumboElement *)&n->v;
 
-		// 0th ID is for the body tag which doesn't need to be or have anythin done
+		// 0th ID is for the body tag which doesn't need to have anything done
 		// since it's where all tags reside by default.
-		if (curid > 0)  {
+		if (curid > 0) {
 			write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
 			write_tag_text(e, fd, html);
 			write_tag_attr(e, fd);

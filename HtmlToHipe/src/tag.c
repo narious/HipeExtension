@@ -38,18 +38,82 @@ static int neltchildren(GumboElement *e)
 	return cnt;
 }
 
-static void write_append_tag(int fd, int curid, char *tagname)
+static void write_append_tag(int fd, int curid, const char *tagname)
 {
 	dprintf(fd, "\tloc = append_tag_getLoc(session, plocs[%d], \"%s\", \"\");\n",
 		curid, tagname);
 }
 
-static void write_tag_text(GumboElement *e, int fd)
+/**
+ * get_tag_text - Get the text within a tag
+ * @s: HTML file as string
+ *
+ * Text is considered all characters in the body of the tag that isn't
+ * within an embedded tag. In the below example HTML, tag1's text is 
+ * "foo helloworldbar" and tag2's text is "ignore me".
+ *
+ * <tag1 attr="abc">foo hello<tag2>ignore me</tag2>worldbar</tag1>
+ *
+ * Returned string is dynamically allocated and must be freed with free.
+ * Return NULL if tag has no text.
+ */
+static char *get_tag_text(GumboElement *e, char *s)
+{
+	// Iterator, start, end and final end indices, stack, and
+	// current text length, and length of substring in text;
+	int i, st, en, end, stk, len, slen;
+	char *text;
+
+	i = e->start_pos.offset;
+	end = e->end_pos.offset;
+	stk = 0;
+	len = 1;  // Start with 1 for later null term char.
+	text = NULL;
+
+	// Move to the start of the tag's body.
+	// TODO currently assumes the > char doesn't appear in any attributes
+	// TODO need to handle properly > appearing in text sections and not decrementing
+	// the stack too much
+	while (i < end && s[i++] != '>') 
+		;
+	st = i;
+
+	for (; i <= end; ++i) {
+		// A '<' without a space next is the start of a new tag.
+		if (s[i] == '<' && s[i+1] != ' ') {
+			// No stack means a section of text has just been passed.
+			if (!stk) {
+				en = i-1;
+				slen = en-st+1;  // Length of subtext.
+				if (slen > 0) {
+					text = realloc(text, len+slen);  // TODO check return?
+					strncpy(text+(len-1), s+st, slen);
+					len += slen;
+				}
+			}
+			++stk;
+		} else if (s[i] == '>') {
+			st = i+1;
+			--stk;
+		}
+	}
+	if (text)
+		text[len] = '\0';
+	return text;
+}
+
+static void write_tag_text(GumboElement *e, int fd, char *html)
 {
 	// TODO filter by only those that can have text
-	// TODO if it's a < with a space after ignore it, otherwise count it as a tag
-	// and wait for a close >, use a stack counting how many there have been
-	;
+	// TODO complexity becomes O(n^2) when done on all elements
+	if (e->tag != GUMBO_TAG_STYLE) {
+		char *t = get_tag_text(e, html);
+
+		if (t) {
+			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TEXT, 0, loc, 1, \"%s\");\n", t);
+			free(t);
+		}
+	}
 }
 
 static void write_tag_attr(GumboElement *e, int fd)
@@ -71,17 +135,18 @@ static bool write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 		// since it's where all tags reside by default.
 		if (curid > 0)  {
 			write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
-			write_tag_text(e, fd);
+			write_tag_text(e, fd, html);
 			write_tag_attr(e, fd);
 		}
 
-		/*fprintf(stderr, "===\n");*/
+		/*fprintf(stderr, "===,sc=%c,ec=%c\n", html[e->start_pos.offset], html[e->end_pos.offset]);*/
 		/*fprintf(stderr, "line=%d,col=%d,offt=%d\n", e->start_pos.line, e->start_pos.column, */
 			/*e->start_pos.offset);*/
 		/*fprintf(stderr, "line=%d,col=%d,offt=%d\n", e->end_pos.line, e->end_pos.column, */
 			/*e->end_pos.offset);*/
 		/*fprintf(stderr, "===\n");*/
 		/*write(STDERR_FILENO, html+e->start_pos.offset, e->end_pos.offset-e->start_pos.offset);*/
+		
 
 		// Set each node's parent location.
 		for (i = 0, j = 0; i < e->children.length; ++i) {

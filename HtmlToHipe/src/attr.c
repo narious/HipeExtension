@@ -33,7 +33,7 @@ static void traverse(GumboNode* node, int fd)
     for (int i=0; i< attribs->length; ++i) {
       // NOTE: casting can fail at run time
         GumboAttribute* at = (GumboAttribute*)(attribs->data[i]); 
-        hipe_build_attrs(at);
+        hipe_build_attrs(at, "not loc supplied", fd);
     }
 
     // Traverses down the children

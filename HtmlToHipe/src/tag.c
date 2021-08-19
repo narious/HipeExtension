@@ -60,7 +60,7 @@ static void write_append_tag(int fd, int curid, const char *tagname)
 static char *get_tag_text(GumboElement *e, char *s)
 {
 	// Iterator, start, end and final end indices, stack, and
-	// current text length, and length of substring in text;
+	// current text length, and length of substring in text.
 	int i, st, en, end, stk, len, slen;
 	char *text;
 
@@ -118,8 +118,13 @@ static void write_tag_text(GumboElement *e, int fd, char *html)
 
 static void write_tag_attr(GumboElement *e, int fd)
 {
-	// TODO for each attribute
-	;
+	GumboAttribute *a;
+
+	for (int i = 0; i < e->attributes.length; ++i) {
+		a = (GumboAttribute *)e->attributes.data[i];
+		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
+			a->name, a->value);
+	}
 }
 
 /**

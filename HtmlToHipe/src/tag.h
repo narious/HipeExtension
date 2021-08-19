@@ -1,6 +1,7 @@
 /*
  * Create all HTML tags in a HTML file with hipe
  * client instructions.
+ * TODO rename this file from tag since attributes done here as well
  */
 #ifndef TAG_H
 #define TAG_H

@@ -1,0 +1,69 @@
+<!-- This html test layout such as tables and flexboxes and css grids -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="test3.css">
+</head>
+<body>
+    
+    <table>
+        <caption>Alien football stars</caption>
+        <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Gloobles</th>
+            <th scope="col">Za'taak</th>
+        </tr>
+        <tr>
+            <th scope="row">TR-7</th>
+            <td>7</td>
+            <td>4,569</td>
+        </tr>
+        <tr>
+            <th scope="row">Khiresh Odo</th>
+            <td>7</td>
+            <td>7,223</td>
+        </tr>
+        <tr>
+            <th scope="row">Mia Oolong</th>
+            <td>9</td>
+            <td>6,219</td>
+        </tr>
+    </table>
+
+    <div style="display: flexbox; flex-direction: column;" class="flexbox">
+        <div class="flexcontent">FLEX</div>
+        <div class="flexcontent">FLEX</div>
+        <div class="flexcontent">FLEX</div>
+        <div class="flexcontent">FLEX</div>
+    </div>
+
+    <div id="interact-bar" class="fade-in-fast">
+        <div id="nav-bar"></div>
+        <p class="p-text neonlightpulse" id="button-area-name">OPTIONS</p>
+        <input type="text" class="fade-in-fast" name="text-bar" id="text-input-interact">
+        <div class="hover-btn-back">
+            <button class="hover-btn blue-btn" onclick="toggleBtnBack(this)"> mode 1</button>
+        </div>
+        <div class="hover-btn-back selected-button">
+            <button class="hover-btn blue-btn" onclick="toggleBtnBack(this)"> mode 2</button>
+        </div>
+        <div class="hover-btn-back">
+            <button class="hover-btn blue-btn" onclick="toggleBtnBack(this)"> mode 3</button>
+        </div>
+        <div id="draw-area" class="fade-in-fast"></div>
+
+        <div id="suggestions-panel">
+            <button class="suggest-btn orange-btn">suggestion 1</button>
+            <button class="suggest-btn orange-btn">suggestion 2</button>
+            <button class="suggest-btn orange-btn">suggestion 3</button>
+        </div>
+    </div>
+
+    
+</body>
+</html>

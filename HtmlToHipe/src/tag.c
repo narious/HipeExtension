@@ -83,10 +83,11 @@ static char *get_tag_text(GumboElement *e, char *s)
 		if (s[i] == '<' && s[i+1] != ' ') {
 			// No stack means a section of text has just been passed.
 			if (!stk) {
+				// Append subtext just passed to text.
 				en = i-1;
 				slen = en-st+1;  // Length of subtext.
 				if (slen > 0) {
-					text = realloc(text, len+slen);  // TODO check return?
+					text = realloc(text, len+slen); 
 					strncpy(text+(len-1), s+st, slen);
 					len += slen;
 				}
@@ -181,10 +182,12 @@ static void write_body_tags(GumboNode *n, int fd, char *html)
 	// Array of parent locations where an element at index i is the hipe_loc of the parent
 	// node of node with ID i.
 	dprintf(fd, "\thipe_loc plocs[%d];\n", nnodes);
+	dprintf(fd, "\thipe_instruction instr;\n");
 	dprintf(fd, "\tsession = hipe_open_session(0, 0, 0, \"test\");\n");
 	dprintf(fd, "\tif (!session)\n");
 	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
 	dprintf(fd, "\tloc = 0;\n");
+	dprintf(fd, "\thipe_instruction_init(&instr);\n");
 
 	write_body_tags_aux(n, fd, 0, html);
 }

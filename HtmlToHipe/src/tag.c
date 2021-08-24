@@ -177,29 +177,74 @@ static void write_body_tags(GumboNode *n, int fd, char *html)
 {
 	int nnodes = mygumbo_count_nodes(n);
 
+	dprintf(fd, "static void hipe_body(hipe_session session)\n");
+	dprintf(fd, "{\n");
 	// Allocate variables.
 	dprintf(fd, "\thipe_loc loc;\n");
 	// Array of parent locations where an element at index i is the hipe_loc of the parent
 	// node of node with ID i.
 	dprintf(fd, "\thipe_loc plocs[%d];\n", nnodes);
-	dprintf(fd, "\thipe_instruction instr;\n");
-	dprintf(fd, "\tsession = hipe_open_session(0, 0, 0, \"test\");\n");
-	dprintf(fd, "\tif (!session)\n");
-	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
 	dprintf(fd, "\tloc = 0;\n");
-	dprintf(fd, "\thipe_instruction_init(&instr);\n");
-
 	write_body_tags_aux(n, fd, 0, html);
+	dprintf(fd, "}\n");
+	dprintf(fd, "\n");
+}
+
+static void handle_head_tag_title(GumboElement *e, int fd, char *html)
+{
+	char *s = get_tag_text(e, html);
+
+	if (s) {
+		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TITLE, 0, 0, 1, \"%s\");\n", s);
+		free(s);
+	}
+}
+
+static void handle_head_tag_link(GumboElement *e, int fd)
+{
+	GumboAttribute *a;
+
+	for (int i = 0; i < e->attributes.length; ++i) {
+		a = (GumboAttribute *)e->attributes.data[i];
+
+		if (strcmp(a->name, "rel") == 0 && strcmp(a->value, "stylesheet") == 0)
+			dprintf(fd, "\t// TODO waiting for Dana to implement head link rel stylesheet\n");
+	}
+}
+
+static void handle_head_elem(GumboElement *e, int fd, char *html)
+{
+	switch (e->tag) {
+		case GUMBO_TAG_LINK:	handle_head_tag_link(e, fd); break;
+		case GUMBO_TAG_TITLE:	handle_head_tag_title(e, fd, html); break;
+		default: break;
+	}
+}
+
+
+static void write_header_tags_aux(GumboNode *n, int fd, char *html)
+{
+	if (n->type == GUMBO_NODE_ELEMENT) {
+		GumboElement *e = (GumboElement *)&n->v;
+
+		handle_head_elem(e, fd, html);
+
+		for (int i = 0; i < e->children.length; ++i) 
+			write_header_tags_aux(e->children.data[i], fd, html);
+	}
 }
 
 /**
  * write_header_tags - Write hipe instructions for header tags
  * @h: gumbo node header tag
  */
-static void write_header_tags(GumboNode *h, int fd)
+static void write_header_tags(GumboNode *n, int fd, char *html)
 {
-	// TODO
-	;
+	dprintf(fd, "static void hipe_head(hipe_session session)\n");
+	dprintf(fd, "{\n");
+	write_header_tags_aux(n, fd, html);
+	dprintf(fd, "}\n");
+	dprintf(fd, "\n");
 }
 
 void mygumbo_write_tags(GumboNode *n, int fd, char *html)
@@ -211,7 +256,7 @@ void mygumbo_write_tags(GumboNode *n, int fd, char *html)
 			for (int i = 0; i < e->children.length; ++i)
 				mygumbo_write_tags(e->children.data[i], fd, html);
 		} else if (e->tag == GUMBO_TAG_HEAD)
-			write_header_tags(n, fd);
+			write_header_tags(n, fd, html);
 		else if (e->tag == GUMBO_TAG_BODY)
 			write_body_tags(n, fd, html);
 	}

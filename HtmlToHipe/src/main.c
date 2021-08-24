@@ -4,26 +4,33 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#include "attr.h"
 #include "tag.h"
 
-void write_head(int fd)
+void write_includes(int fd)
 {
 	// Print all on separate lines to make it clearer what's happening.
 	dprintf(fd, "#include <hipe.h>\n");
 	dprintf(fd, "#include <string.h>\n");
 	dprintf(fd, "#include <stdlib.h>\n");
 	dprintf(fd, "\n");
+}
+
+void write_main(int fd)
+{
 	dprintf(fd, "int main(void)\n");
 	dprintf(fd, "{\n");
 	dprintf(fd, "\thipe_session session;\n");
-}
-
-void write_tail(int fd)
-{
-	// TODO can't close application with buttons when there's an infinite loop
-	dprintf(fd, "\tfor (;;)\n");
-	dprintf(fd, "\t\t;\n");
+	dprintf(fd, "\thipe_instruction instr;\n");
+	dprintf(fd, "\tsession = hipe_open_session(0, 0, 0, \"test\");\n");
+	dprintf(fd, "\tif (!session)\n");
+	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
+	dprintf(fd, "\thipe_instruction_init(&instr);\n");
+	dprintf(fd, "\thipe_build_html_head(session);\n");
+	dprintf(fd, "\thipe_build_html_body(session);\n");
+	dprintf(fd, "\tfor (;;) {\n");
+	dprintf(fd, "\t\tif (hipe_next_instruction(session, &instr, 1) && instr.opcode == HIPE_OP_FRAME_CLOSE)\n");
+	dprintf(fd, "\t\t\tbreak;\n");
+	dprintf(fd, "\t}\n");
 	dprintf(fd, "\thipe_close_session(session);\n");
 	dprintf(fd, "\treturn 0;\n");
 	dprintf(fd, "}");
@@ -36,12 +43,9 @@ void write_tail(int fd)
  */
 void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
 {
-	write_head(fd);
-	// Write the gumbo tags first so that tags can be located in hipe when
-	// writing attributes.
-	mygumbo_write_tags(g->root, fd, html);
-	mygumbo_write_attr(g->root, fd);
-	write_tail(fd);
+	write_includes(fd);
+	mygumbo_write_tags(g->root, fd, html);  // TODO rename
+	write_main(fd);
 }
 
 /**

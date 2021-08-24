@@ -177,7 +177,7 @@ static void write_body_tags(GumboNode *n, int fd, char *html)
 {
 	int nnodes = mygumbo_count_nodes(n);
 
-	dprintf(fd, "static void hipe_body(hipe_session session)\n");
+	dprintf(fd, "static void hipe_build_html_body(hipe_session session)\n");
 	dprintf(fd, "{\n");
 	// Allocate variables.
 	dprintf(fd, "\thipe_loc loc;\n");
@@ -240,7 +240,7 @@ static void write_header_tags_aux(GumboNode *n, int fd, char *html)
  */
 static void write_header_tags(GumboNode *n, int fd, char *html)
 {
-	dprintf(fd, "static void hipe_head(hipe_session session)\n");
+	dprintf(fd, "static void hipe_build_html_head(hipe_session session)\n");
 	dprintf(fd, "{\n");
 	write_header_tags_aux(n, fd, html);
 	dprintf(fd, "}\n");

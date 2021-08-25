@@ -105,15 +105,11 @@ static char *get_tag_text(GumboElement *e, char *s)
 
 static void write_tag_text(GumboElement *e, int fd, char *html)
 {
-	// TODO filter by only those that can have text
-	// TODO complexity becomes O(n^2) when done on all elements
-	if (e->tag != GUMBO_TAG_STYLE) {
-		char *t = get_tag_text(e, html);
+	char *t = get_tag_text(e, html);
 
-		if (t) {
-			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TEXT, 0, loc, 1, \"%s\");\n", t);
-			free(t);
-		}
+	if (t) {
+		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TEXT, 0, loc, 1, \"%s\");\n", t);
+		free(t);
 	}
 }
 
@@ -129,6 +125,74 @@ static void write_tag_attr(GumboElement *e, int fd)
 }
 
 /**
+ * whitespace - Get whether a character is whitespace
+ */
+static bool whitespace(char c)
+{
+	return c == ' ' || c == '\t' || c == '\n';
+}
+
+/**
+ * write_tag_style - Write the contents of a style tag as hipe instructions so that CSS
+ *	can be set
+ */
+static void write_tag_style(GumboElement *e, int fd, char *s)
+{
+	// Iterator, start and end indices of substring (both endpoints inclusive) 
+	// in html to write, and end index to go up to.
+	int i, st, en, end;
+
+	i = e->start_pos.offset;
+	end = e->end_pos.offset;
+
+	// Go to start of tag's body/text.
+	while (s[i++] != '>')
+		;
+	while (whitespace(s[i]))
+		++i;
+	while (i < end) {
+		// Start of CSS element/selector.
+		st = i;
+		while (!whitespace(s[i]))
+			++i;
+		en = i-1;
+
+		dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"");
+		write(fd, s+st, en-st+1);
+		dprintf(fd, "\", \"");
+
+		while (s[i++] != '{')
+			;
+		while (whitespace(s[i]))
+			++i;
+		// Start of data paired with CSS element to set.
+		st = i;
+		for (; s[i] != '}'; ++i) {
+			if (!whitespace(s[i])) 
+				en = i;
+		}
+		write(fd, s+st, en-st+1);
+		dprintf(fd, "\");\n");
+
+		// Do this at end rather than start to try and push passed end index and break out
+		// of outer while loop. Increment once before to push passed '}'.
+		for (++i; whitespace(s[i]); ++i)
+			;
+	}
+}
+
+static void handle_body_elem(GumboElement *e, int fd, int curid, char *html)
+{
+	write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
+	write_tag_attr(e, fd);
+
+	if (e->tag != GUMBO_TAG_STYLE)
+		write_tag_text(e, fd, html);
+	else
+		write_tag_style(e, fd, html);
+}
+
+/**
  * @curid: current node's ID
  */
 static bool write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
@@ -139,11 +203,8 @@ static bool write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 
 		// 0th ID is for the body tag which doesn't need to have anything done
 		// since it's where all tags reside by default.
-		if (curid > 0) {
-			write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
-			write_tag_text(e, fd, html);
-			write_tag_attr(e, fd);
-		}
+		if (curid > 0) 
+			handle_body_elem(e, fd, curid, html);
 
 		/*fprintf(stderr, "===,sc=%c,ec=%c\n", html[e->start_pos.offset], html[e->end_pos.offset]);*/
 		/*fprintf(stderr, "line=%d,col=%d,offt=%d\n", e->start_pos.line, e->start_pos.column, */

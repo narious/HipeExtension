@@ -69,7 +69,7 @@ static void hipe_build_attrs(GumboAttribute* at, const char * hipeLoc, int fd)
 // From a node get the tagname
 static const char * get_tag_name(GumboNode *node)
 {
-  char * tagname;
+  const char * tagname;
   // work around lack of proper name for document node
   if (node->type == GUMBO_NODE_DOCUMENT) {
     tagname = "document";

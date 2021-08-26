@@ -19,6 +19,14 @@ whitelist: whitelist.c
 whitelist.c:
 	$(htmltohipe_location) whitelist.html > whitelist.c
 
+nav: nav.c
+	$(CC) nav.c -o nav -lhipe
+nav.c:
+	$(htmltohipe_location) nav.html > nav.c
+
+runnav:
+	./nav
+	
 runwhitelist:
 	./whitelist
 

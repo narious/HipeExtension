@@ -84,18 +84,17 @@ char *falloc(int fd)
 	return s;
 }
 
-int main(void)
+void html_to_hipe(char *fpath)
 {
 	int fd;
 	char *html;
 	GumboOutput *g;
-	char *fpath = "data/square.html";
 
 	fd = open(fpath, O_RDONLY);
 
 	if (fd == -1) {
 		perror(fpath);
-		exit(EXIT_FAILURE);
+		return;
 	}
 
 	html = falloc(fd);
@@ -103,10 +102,15 @@ int main(void)
 	// TODO how does gumbo parse a string, does it stop at a null term character
 	// or some other special delimiter?
 	g = gumbo_parse(html);  // TODO handle errors
-
 	mygumbo_write_hipe(g, STDOUT_FILENO, html);
 
 	gumbo_destroy_output(&kGumboDefaultOptions, g);
 	free(html);  // Free last since buffer is supposed to live as long as gumbo is used.
+}
+
+int main(int argc, char *argv[])
+{
+	for (int i = 1; i < argc; ++i) 
+		html_to_hipe(argv[i]);
 	return 0;
 }

@@ -67,7 +67,7 @@ static char *get_tag_text(GumboElement *e, char *s)
 	i = e->start_pos.offset;
 	end = e->end_pos.offset;
 	stk = 0;
-	len = 1;  // Start with 1 for later null term char.
+	len = 0;  // Start with 1 for later null term char.
 	text = NULL;
 
 	// Move to the start of the tag's body.
@@ -88,28 +88,36 @@ static char *get_tag_text(GumboElement *e, char *s)
 				slen = en-st+1;  // Length of subtext.
 				if (slen > 0) {
 					text = realloc(text, len+slen); 
-					strncpy(text+(len-1), s+st, slen);
+					strncpy(text+len, s+st, slen);
 					len += slen;
 				}
+			} else if (s[i+1] == '/') {  // End delimiter for a tag's section..
+				// Move to passed end of tag.
+				while (s[i] != '>')
+					++i;
+				st = i+1;
+				--stk;
+				continue;
 			}
 			++stk;
-		} else if (s[i] == '>') {
-			st = i+1;
-			--stk;
 		}
 	}
-	if (text)
+	if (text) {
+		text = realloc(text, len+1);
 		text[len] = '\0';
+	}
 	return text;
 }
 
 static void write_tag_text(GumboElement *e, int fd, char *html)
 {
-	char *t = get_tag_text(e, html);
+	char *s = get_tag_text(e, html);
 
-	if (t) {
-		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TEXT, 0, loc, 1, \"%s\");\n", t);
-		free(t);
+	if (s) {
+		s = str_rm_tab_nl(s);
+		if (!allwhitespace(s))
+			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TEXT, 0, loc, 1, \"%s\");\n", s);
+		free(s);
 	}
 }
 
@@ -125,25 +133,28 @@ static void write_tag_attr(GumboElement *e, int fd)
 }
 
 /**
- * whitespace - Get whether a character is whitespace
- */
-static bool whitespace(char c)
-{
-	return c == ' ' || c == '\t' || c == '\n';
-}
-
-/**
- * write_tag_style - Write the contents of a style tag as hipe instructions so that CSS
+ * get_tag_style - Get the contents of a style tag as hipe instructions so that CSS
  *	can be set
  */
-static void write_tag_style(GumboElement *e, int fd, char *s)
+static char *get_tag_style(GumboElement *e, int fd, char *s)
 {
 	// Iterator, start and end indices of substring (both endpoints inclusive) 
 	// in html to write, and end index to go up to.
-	int i, st, en, end;
+	int i, st, en, end, n, preflen, midlen, suflen;
+	char *t;
+	char *pref = "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"";
+	char *mid = "\", \"";
+	char *suf = "\");\n";
+
+	// TODO this func is too long
 
 	i = e->start_pos.offset;
 	end = e->end_pos.offset;
+	n = 0;
+	preflen = strlen(pref);
+	midlen = strlen(mid);
+	suflen = strlen(suf);
+	t = NULL;
 
 	// Go to start of tag's body/text.
 	while (s[i++] != '>')
@@ -153,16 +164,22 @@ static void write_tag_style(GumboElement *e, int fd, char *s)
 	while (i < end) {
 		// Start of CSS element/selector.
 		st = i;
-		while (!whitespace(s[i]))
+		while (!whitespace(s[i]) && s[i] != '{')
 			++i;
 		en = i-1;
 
-		dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"");
-		write(fd, s+st, en-st+1);
-		dprintf(fd, "\", \"");
+		t = realloc(t, n+preflen+(en-st+1)+midlen);
+		strcpy(t+n, pref);
+		n += preflen;
+		strncpy(t+n, s+st, en-st+1);
+		n += en-st+1;
+		strcpy(t+n, mid);
+		n += midlen;
 
-		while (s[i++] != '{')
-			;
+		while (s[i] != '{')
+			++i;
+		if (s[i] == '{')
+			++i;
 		while (whitespace(s[i]))
 			++i;
 		// Start of data paired with CSS element to set.
@@ -171,14 +188,32 @@ static void write_tag_style(GumboElement *e, int fd, char *s)
 			if (!whitespace(s[i])) 
 				en = i;
 		}
-		write(fd, s+st, en-st+1);
-		dprintf(fd, "\");\n");
+		t = realloc(t, n+(en-st+1)+suflen);
+		strncpy(t+n, s+st, en-st+1);
+		n += en-st+1;
+		strcpy(t+n, suf);
+		n += suflen;
 
 		// Do this at end rather than start to try and push passed end index and break out
 		// of outer while loop. Increment once before to push passed '}'.
 		for (++i; whitespace(s[i]); ++i)
 			;
 	}
+	if (t) {
+		t = realloc(t, n+1);
+		t[n] = '\0';
+	}
+	return t;
+}
+
+static void handle_tag_style(GumboElement *e, int fd, char *html)
+{
+	// This tag can appear both in header and body.
+	char *s = get_tag_style(e, fd, html);
+
+	s = str_rm_strconst_tab_nl(s);
+	dprintf(fd, s);
+	free(s);
 }
 
 static void handle_body_elem(GumboElement *e, int fd, int curid, char *html)
@@ -189,7 +224,7 @@ static void handle_body_elem(GumboElement *e, int fd, int curid, char *html)
 	if (e->tag != GUMBO_TAG_STYLE)
 		write_tag_text(e, fd, html);
 	else
-		write_tag_style(e, fd, html);
+		handle_tag_style(e, fd, html);
 }
 
 /**
@@ -205,16 +240,7 @@ static bool write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 		// since it's where all tags reside by default.
 		if (curid > 0) 
 			handle_body_elem(e, fd, curid, html);
-
-		/*fprintf(stderr, "===,sc=%c,ec=%c\n", html[e->start_pos.offset], html[e->end_pos.offset]);*/
-		/*fprintf(stderr, "line=%d,col=%d,offt=%d\n", e->start_pos.line, e->start_pos.column, */
-			/*e->start_pos.offset);*/
-		/*fprintf(stderr, "line=%d,col=%d,offt=%d\n", e->end_pos.line, e->end_pos.column, */
-			/*e->end_pos.offset);*/
-		/*fprintf(stderr, "===\n");*/
-		/*write(STDERR_FILENO, html+e->start_pos.offset, e->end_pos.offset-e->start_pos.offset);*/
 		
-
 		// Set each node's parent location.
 		for (i = 0, j = 0; i < e->children.length; ++i) {
 			n = (GumboNode *)e->children.data[i];
@@ -278,6 +304,7 @@ static void handle_head_elem(GumboElement *e, int fd, char *html)
 	switch (e->tag) {
 		case GUMBO_TAG_LINK:	handle_head_tag_link(e, fd); break;
 		case GUMBO_TAG_TITLE:	handle_head_tag_title(e, fd, html); break;
+		case GUMBO_TAG_STYLE:	handle_tag_style(e, fd, html); break;
 		default: break;
 	}
 }

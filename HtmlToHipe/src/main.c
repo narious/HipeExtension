@@ -25,8 +25,8 @@ void write_main(int fd)
 	dprintf(fd, "\tif (!session)\n");
 	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
 	dprintf(fd, "\thipe_instruction_init(&instr);\n");
-	dprintf(fd, "\thipe_build_html_head(session);\n");
 	dprintf(fd, "\thipe_build_html_body(session);\n");
+	dprintf(fd, "\thipe_build_html_head(session);\n");
 	dprintf(fd, "\tfor (;;) {\n");
 	dprintf(fd, "\t\tif (hipe_next_instruction(session, &instr, 1) && instr.opcode == HIPE_OP_FRAME_CLOSE)\n");
 	dprintf(fd, "\t\t\tbreak;\n");

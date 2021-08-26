@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "str.h"
 
 /**
  * gumbo_write_tags - Write all HTML tags in a Gumbo representation of

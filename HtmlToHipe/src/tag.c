@@ -290,13 +290,22 @@ static void handle_head_tag_title(GumboElement *e, int fd, char *html)
 static void handle_head_tag_link(GumboElement *e, int fd)
 {
 	GumboAttribute *a;
+	const char *fpath;
+	bool fnd;
+
+	fpath = NULL;
+	fnd = false;
 
 	for (int i = 0; i < e->attributes.length; ++i) {
 		a = (GumboAttribute *)e->attributes.data[i];
 
 		if (strcmp(a->name, "rel") == 0 && strcmp(a->value, "stylesheet") == 0)
-			dprintf(fd, "\t// TODO waiting for Dana to implement head link rel stylesheet\n");
+			fnd = true;
+		if (strcmp(a->name, "href") == 0)
+			fpath = a->value;
 	}
+	if (fnd && fpath)
+		dprintf(fd, "\thipe_send(session, HIPE_OP_IMPORT_CSS, 0, 0, 2, \"%s\", \"0\");\n", fpath);
 }
 
 static void handle_head_elem(GumboElement *e, int fd, char *html)

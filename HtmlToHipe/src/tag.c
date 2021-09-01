@@ -238,15 +238,15 @@ static bool write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 
 		// 0th ID is for the body tag which doesn't need to have anything done
 		// since it's where all tags reside by default.
-		if (curid > 0) 
+		if (curid > 0)  {
 			handle_body_elem(e, fd, curid, html);
-		
-		// Set each node's parent location.
-		for (i = 0, j = 0; i < e->children.length; ++i) {
-			n = (GumboNode *)e->children.data[i];
-			if (n->type == GUMBO_NODE_ELEMENT)
-				dprintf(fd, "\tplocs[%d] = loc;\n", ++j+curid);
-		}
+			// Set each node's parent location.
+			for (i = 0, j = 0; i < e->children.length; ++i) {
+				n = (GumboNode *)e->children.data[i];
+				if (n->type == GUMBO_NODE_ELEMENT)
+					dprintf(fd, "\tplocs[%d] = loc;\n", ++j+curid);
+			}
+		} 
 		for (i = 0, j = 1; i < e->children.length; ++i) {
 			if (write_body_tags_aux(e->children.data[i], fd, j+curid, html))
 				++j;
@@ -272,6 +272,7 @@ static void write_body_tags(GumboNode *n, int fd, char *html)
 	// node of node with ID i.
 	dprintf(fd, "\thipe_loc plocs[%d];\n", nnodes);
 	dprintf(fd, "\tloc = 0;\n");
+	dprintf(fd, "\tmemset((void *)plocs, 0, %d*sizeof(hipe_loc));\n", nnodes);
 	write_body_tags_aux(n, fd, 0, html);
 	dprintf(fd, "}\n");
 	dprintf(fd, "\n");

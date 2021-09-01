@@ -127,17 +127,17 @@ static void write_tag_attr(GumboElement *e, int fd)
 	
 	for (int i = 0; i < e->attributes.length; ++i) {
 		a = (GumboAttribute *)e->attributes.data[i];
-		if (/*strcmp(a->name, "style")*/false) {
+		if (strcmp(a->name, "style") == 0) {
 			char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
-			char * consumable_str = (char*)malloc(strlen(a->name) * sizeof(char));
-			strcpy(consumable_str, a->value);
-			char * style_name = strtok(consumable_str, ":");
+			// char * consumable_str = (char*)malloc(strlen(a->name) * sizeof(char));
+			// strcpy(consumable_str, a->value);
+			char * style_name = strtok(a->value, ":");
 			char * style_val = strtok(NULL, ";");
 			while (style_val != NULL && style_name != NULL) {
 				// remove white spaces from the style_name
 				// strncpy things
 				int i = 0;
-				while (whitespace(style_name[i])) ++i;
+				while (isspace((unsigned char)*style_name)) style_name++;
 
 				dprintf(fd, "%s%s\",\"%s\");\n", st, style_name, style_val);
 				style_name = strtok(NULL, ":");

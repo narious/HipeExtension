@@ -1,0 +1,37 @@
+\hypertarget{HtmlToHipe_8h_source}{}\doxysection{Html\+To\+Hipe.\+h}
+\label{HtmlToHipe_8h_source}\index{HtmlToHipe/test/src/HtmlToHipe.h@{HtmlToHipe/test/src/HtmlToHipe.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#include <fstream>}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}gumbo.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}attr.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{static} \textcolor{keywordtype}{void} htmltohipe(std::string\& htmlstring, std::ostream\& outputfile)}
+\DoxyCodeLine{9 \{}
+\DoxyCodeLine{10     outputfile << htmlstring;}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12     GumboOutput* gumbo\_output = gumbo\_parse(htmlstring.c\_str());}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14     }
+\DoxyCodeLine{15     \textcolor{comment}{// An array relating to the DOM's document}}
+\DoxyCodeLine{16     GumboNode* gumbo\_document = gumbo\_output-\/>document;}
+\DoxyCodeLine{17     \textcolor{comment}{// Open an output file}}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19     printf(\textcolor{stringliteral}{"{}======OUTPUT OF TRAVERSE====\(\backslash\)n"{}});}
+\DoxyCodeLine{20     printf(\textcolor{stringliteral}{"{}\%s"{}}, traverse(gumbo\_document, 0, \textcolor{stringliteral}{"{} "{}}).c\_str());}
+\DoxyCodeLine{21     }
+\DoxyCodeLine{22     \textcolor{comment}{// Loops through the parse tree }}
+\DoxyCodeLine{23         \textcolor{comment}{// for each tag convert it to appropriate hipe text}}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25     \textcolor{comment}{// Close file and finish}}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28     gumbo\_destroy\_output(\&kGumboDefaultOptions, gumbo\_output);}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30 \}}
+\DoxyCodeLine{31 }
+
+\end{DoxyCode}

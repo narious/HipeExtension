@@ -2,6 +2,8 @@
 
 // Used for counting the number of media files for src tag (better way than gloabl?)
 int src_tag_count = 0;
+// Need to specify of the source files so it can be used in assigning later
+char * src_file_location[50];
 
 /**
  * mygumbo_count_nodes - Count the number of nodes in a gumbo tree rooted at a node

@@ -36,6 +36,24 @@ void write_main(int fd)
 	dprintf(fd, "\treturn 0;\n");
 	dprintf(fd, "}");
 }
+/**
+ * Writes a function that handles src tags in the hipe cli
+ */
+void write_tag_src_handler(int fd) {
+	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char * filesource, char * mime) {\n");
+	dprintf(fd, "\t\tFILE* file = fopen(filesource, \"r\");\n");
+	dprintf(fd, "\tif(!file) {\n");
+	dprintf(fd, "\t\t\tprintf(\"Could not open file: '%%s' for reading.\", filesource); return;}");
+	dprintf(fd, "\t\tfflush(stdout);\n");
+	dprintf(fd, "\t\tfseek(file, 0, SEEK_END);size_t size = ftell(file); rewind(file);char* data = malloc(size);size_t result = fread(data, 1, size, file);\n");
+	dprintf(fd, "\t\tif(result != size) {printf(\"Error reading file\");return;}\n");
+	dprintf(fd, "\t\tfflush(stdout);\n");
+	dprintf(fd, "\t\thipe_instruction instr;hipe_instruction_init(&instr);instr.opcode = HIPE_OP_SET_SRC;instr.location = loc;instr.arg[0] = data; instr.arg_length[0]=size;instr.arg[1] = mime;instr.arg_length[1]=strlen(instr.arg[1]);\n");
+	dprintf(fd, "\t\thipe_send_instruction(session, instr); free(data);\n");
+	dprintf(fd,"}\n");
+	dprintf(fd,"\n");
+}
+
 
 /**
  * mygumbo_write_hipe - Write gumbo output of a HTML file as hipe client send
@@ -45,6 +63,7 @@ void write_main(int fd)
 void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
 {
 	write_includes(fd);
+	write_tag_src_handler(fd);
 	mygumbo_write_tags(g->root, fd, html);  // TODO rename
 	write_main(fd);
 }

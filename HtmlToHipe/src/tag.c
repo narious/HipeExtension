@@ -129,19 +129,11 @@ static void write_tag_text(GumboElement *e, int fd, char *html)
 static void write_tag_src(GumboAttribute* a, int fd) {
 	const char * filesource = a->value;
 	if (*filesource == '\0') return;
-	dprintf(fd, "\tFILE* file%d = fopen(\"%s\", \"r\");\n", src_tag_count, filesource);
-	dprintf(fd, "\tif(!file%d) {\n", src_tag_count);
-	dprintf(fd, "\t\tprintf(\"Could not open file%d: '%s' for reading.\"); return;}\n",src_tag_count,filesource);
-	dprintf(fd, "\tfflush(stdout);\n");
-	dprintf(fd, "\tfseek(file%1$d, 0, SEEK_END);size_t size%1$d = ftell(file%1$d); rewind(file%1$d);char* data%1$d = malloc(size%1$d);size_t result%1$d = fread(data%1$d, 1, size%1$d, file%1$d);\n",
-	src_tag_count);
-	dprintf(fd, "\tif(result%1$d != size%1$d) {printf(\"Error reading file%1$d\");return;}\n", src_tag_count);
-	dprintf(fd, "\tfflush(stdout);\n");
+
 	// Gets extension form the file
 	const char* dot = strrchr(filesource, '.');
 	if (!dot || dot == filesource) return;
 	dot++;
-
 	//Determine the correct mime (currently only 5 are supported)
 	char mime[25];
 	if (strcmp(dot, "mp3") == 0) {
@@ -165,10 +157,7 @@ static void write_tag_src(GumboAttribute* a, int fd) {
 	} else {
 		strncpy(mime, "", 25);
 	}
-	dprintf(fd, "\thipe_instruction instr%1$d;hipe_instruction_init(&instr%1$d);instr%1$d.opcode = HIPE_OP_SET_SRC;instr%1$d.location = loc;instr%1$d.arg[0] = data%1$d; instr%1$d.arg_length[0]=size%1$d;instr%1$d.arg[1] = \"%2$s\";instr%1$d.arg_length[1]=strlen(instr%1$d.arg[1]);\n", src_tag_count,mime);
-	dprintf(fd, "\thipe_send_instruction(session, instr%1$d); free(data%1$d);\n", src_tag_count);
-
-	src_tag_count++;
+	dprintf(fd, "\thandle_tag_src(session, loc, \"%s\", \"%s\");\n", filesource, mime);
 }
 
 static void write_tag_attr(GumboElement *e, int fd)

@@ -12,6 +12,7 @@ void write_includes(int fd)
 	dprintf(fd, "#include <hipe.h>\n");
 	dprintf(fd, "#include <string.h>\n");
 	dprintf(fd, "#include <stdlib.h>\n");
+	dprintf(fd, "#include <stdio.h>\n");
 	dprintf(fd, "\n");
 }
 

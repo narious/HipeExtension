@@ -1,5 +1,8 @@
 #include "tag.h"
 
+// Used for counting the number of media files for src tag (better way than gloabl?)
+int src_tag_count = 0;
+
 /**
  * mygumbo_count_nodes - Count the number of nodes in a gumbo tree rooted at a node
  */
@@ -121,6 +124,51 @@ static void write_tag_text(GumboElement *e, int fd, char *html)
 	}
 }
 
+static void write_tag_src(GumboAttribute* a, int fd) {
+	const char * filesource = a->value;
+	if (*filesource == '\0') return;
+	dprintf(fd, "\tFILE* file%d = fopen(\"%s\", \"r\");\n", src_tag_count, filesource);
+	dprintf(fd, "\tif(!file%d) {\n", src_tag_count);
+	dprintf(fd, "\t\tprintf(\"Could not open file%d: '%s' for reading.\"); return;}\n",src_tag_count,filesource);
+	dprintf(fd, "\tfflush(stdout);\n");
+	dprintf(fd, "\tfseek(file%1$d, 0, SEEK_END);size_t size%1$d = ftell(file%1$d); rewind(file%1$d);char* data%1$d = malloc(size%1$d);size_t result%1$d = fread(data%1$d, 1, size%1$d, file%1$d);\n",
+	src_tag_count);
+	dprintf(fd, "\tif(result%1$d != size%1$d) {printf(\"Error reading file%1$d\");return;}\n", src_tag_count);
+	dprintf(fd, "\tfflush(stdout);\n");
+	// Gets extension form the file
+	const char* dot = strrchr(filesource, '.');
+	if (!dot || dot == filesource) return;
+	dot++;
+
+	//Determine the correct mime (currently only 5 are supported)
+	char mime[25];
+	if (strcmp(dot, "mp3") == 0) {
+		strncpy(mime, "audio/mp3", 25);
+
+	} else if (strcmp(dot, "mp4") == 0) {
+		strncpy(mime, "video/mp4", 25);
+
+	} else if (strcmp(dot, "png") == 0) {
+		strncpy(mime, "image/png", 25);
+		
+	} else if (strcmp(dot, "jpeg") == 0 || strcmp(dot, "jpg") == 0) {
+		strncpy(mime, "image/jpeg", 25);
+		
+	} else if (strcmp(dot, "aac") == 0) {
+		strncpy(mime, "audio/aac", 25);
+		
+	} else if (strcmp(dot, "webm") == 0) {
+		strncpy(mime, "video/wbm", 25);
+	
+	} else {
+		strncpy(mime, "", 25);
+	}
+	dprintf(fd, "\thipe_instruction instr%1$d;hipe_instruction_init(&instr%1$d);instr%1$d.opcode = HIPE_OP_SET_SRC;instr%1$d.location = loc;instr%1$d.arg[0] = data%1$d; instr%1$d.arg_length[0]=size%1$d;instr%1$d.arg[1] = \"%2$s\";instr%1$d.arg_length[1]=strlen(instr%1$d.arg[1]);\n", src_tag_count,mime);
+	dprintf(fd, "\thipe_send_instruction(session, instr%1$d); free(data%1$d);\n", src_tag_count);
+
+	src_tag_count++;
+}
+
 static void write_tag_attr(GumboElement *e, int fd)
 {
 	GumboAttribute *a;
@@ -129,9 +177,9 @@ static void write_tag_attr(GumboElement *e, int fd)
 		a = (GumboAttribute *)e->attributes.data[i];
 		if (strcmp(a->name, "style") == 0) {
 			char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
-			// char * consumable_str = (char*)malloc(strlen(a->name) * sizeof(char));
-			// strcpy(consumable_str, a->value);
-			char * style_name = strtok(a->value, ":");
+			char * consumable_str = (char*)malloc(strlen(a->name) * sizeof(char));
+			strcpy(consumable_str, a->value);
+			char * style_name = strtok(consumable_str, ":");
 			char * style_val = strtok(NULL, ";");
 			while (style_val != NULL && style_name != NULL) {
 				// remove white spaces from the style_name
@@ -143,6 +191,10 @@ static void write_tag_attr(GumboElement *e, int fd)
 				style_name = strtok(NULL, ":");
 				style_val = strtok(NULL, ";");
 			}
+
+			free(consumable_str);
+		} else if (strcmp(a->name, "src") == 0) {
+			write_tag_src(a, fd);
 		} else {
 		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
 			a->name, a->value);

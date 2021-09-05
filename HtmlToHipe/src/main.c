@@ -6,6 +6,9 @@
 #include <sys/stat.h>
 #include "tag.h"
 
+// Setting a defualt source code directory, need to implment this later
+char * src_tag_directory ="data/";
+
 void write_includes(int fd)
 {
 	// Print all on separate lines to make it clearer what's happening.
@@ -41,15 +44,18 @@ void write_main(int fd)
  */
 void write_tag_src_handler(int fd) {
 	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char * filesource, char * mime) {\n");
-	dprintf(fd, "\t\tFILE* file = fopen(filesource, \"r\");\n");
+	dprintf(fd, "\tchar filefullpath[50];\n");
+	dprintf(fd, "\tstrcat(filefullpath, \"%s\");\n", src_tag_directory);
+	dprintf(fd, "\tstrcat(filefullpath, filesource);\n");
+	dprintf(fd, "\tFILE* file = fopen(filefullpath, \"r\");\n");
 	dprintf(fd, "\tif(!file) {\n");
-	dprintf(fd, "\t\t\tprintf(\"Could not open file: '%%s' for reading.\", filesource); return;}");
+	dprintf(fd, "\t\t\tprintf(\"Could not open file: '%%s' for reading.\", filefullpath); return;}");
 	dprintf(fd, "\t\tfflush(stdout);\n");
-	dprintf(fd, "\t\tfseek(file, 0, SEEK_END);size_t size = ftell(file); rewind(file);char* data = malloc(size);size_t result = fread(data, 1, size, file);\n");
-	dprintf(fd, "\t\tif(result != size) {printf(\"Error reading file\");return;}\n");
+	dprintf(fd, "\tfseek(file, 0, SEEK_END);size_t size = ftell(file); rewind(file);char* data = malloc(size);size_t result = fread(data, 1, size, file);\n");
+	dprintf(fd, "\tif(result != size) {printf(\"Error reading file\");return;}\n");
 	dprintf(fd, "\t\tfflush(stdout);\n");
-	dprintf(fd, "\t\thipe_instruction instr;hipe_instruction_init(&instr);instr.opcode = HIPE_OP_SET_SRC;instr.location = loc;instr.arg[0] = data; instr.arg_length[0]=size;instr.arg[1] = mime;instr.arg_length[1]=strlen(instr.arg[1]);\n");
-	dprintf(fd, "\t\thipe_send_instruction(session, instr); free(data);\n");
+	dprintf(fd, "\thipe_instruction instr;hipe_instruction_init(&instr);instr.opcode = HIPE_OP_SET_SRC;instr.location = loc;instr.arg[0] = data; instr.arg_length[0]=size;instr.arg[1] = mime;instr.arg_length[1]=strlen(instr.arg[1]);\n");
+	dprintf(fd, "\thipe_send_instruction(session, instr); free(data);\n");
 	dprintf(fd,"}\n");
 	dprintf(fd,"\n");
 }

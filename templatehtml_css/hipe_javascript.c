@@ -11,10 +11,8 @@ int main(int argc, char **argv) {
     exit(1);
   hipe_loc h1 = append_tag_getLoc(session, 0, "h1", "h1id");
   hipe_send(session, HIPE_OP_SET_TEXT, 0, h1, 1, "Hello");
-  hipe_send(session, HIPE_OP_SET_TEXT, 0, h1, 1, "!this.innerHTML='new html'");
-  hipe_send(session, HIPE_OP_SET_TEXT, 0, h1, 1, "!this.textContent='new content'");
-  hipe_send(session, HIPE_OP_SET_TEXT, 0, h1, 1, "!this.innterText='new text'");
-  hipe_send(session, HIPE_OP_SET_TEXT, 0, h1, 1, "!this.innterText='new text'");
+  hipe_send(session, HIPE_OP_RUN_SCRIPT, 0, 0, 2, "alert(this)", "1");
+  hipe_send(session, HIPE_OP_RUN_SCRIPT, 0, 0, 1, "alert(console)");
 
   hipe_instruction instruction;
   hipe_instruction_init(&instruction);

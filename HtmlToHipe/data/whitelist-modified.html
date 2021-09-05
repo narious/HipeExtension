@@ -1,3 +1,4 @@
+
 <!-- This file focusing on testing the entire white tag list -->
 
 <!DOCTYPE html>
@@ -7,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="whitelist.css">
+    <link rel="stylesheet" href="./whitelist.css">
 </head>
 <body>
     <h1>Testing all white listed tags</h1>
@@ -45,22 +46,36 @@
         <div> /div text/ </div>
         <center> /center text/ </center>
         <a> /a text/ </a>
+        <img> /img text/ </img>
         <abbr> /abbr text/ </abbr>
+        <iframe> /iframe text/ </iframe>
         <b> /b text/ </b>
+        <video> /video text/ </video>
         <bdo> /bdo text/ </bdo>
+        <audio> /audio text/ </audio>
         <big> /big text/ </big>
-        <br> /br text/ </br>
+        <track> /track text/ </track>
         <cite> /cite text/ </cite>
+        <canvas> /canvas text/ </canvas>
         <code> /code text/ </code>
+        <map> /map text/ </map>
         <dfn> /dfn text/ </dfn>
+        <area> /area text/ </area>
         <em> /em text/ </em>
+        <svg> /svg text/ </svg>
         <i> /i text/ </i>
+        <frame> /frame text/ </frame>
         <kbd> /kbd text/ </kbd>
+        <frameset> /frameset text/ </frameset>
         <mark> /mark text/ </mark>
         <q> /q text/ </q>
-        <rp> /rp text/ </rp>
-        <rt> /rt text/ </rt>
-        <ruby> /ruby text/ </ruby>
+        <br> /br text/ </br>
+        <source> /source text/ </source>
+
+        <ruby>
+            漢 <rp>(</rp><rt>ㄏㄢˋ</rt><rp>)</rp>
+        </ruby>
+
         <s> /s text/ </s>
         <samp> /samp text/ </samp>
         <small> /small text/ </small>
@@ -76,28 +91,7 @@
         <wbr> /wbr text/ </wbr>
         <ins> /ins text/ </ins>
         <del> /del text/ </del>
-        <img> /img text/ </img>
-        <iframe> /iframe text/ </iframe>
-        <video> /video text/ </video>
-        <audio> /audio text/ </audio>
-        <source> /source text/ </source>
-        <track> /track text/ </track>
-        <canvas> /canvas text/ </canvas>
-        <map> /map text/ </map>
-        <area> /area text/ </area>
-        <svg> /svg text/ </svg>
-        <frame> /frame text/ </frame>
-        <frameset> /frameset text/ </frameset>
-        <table> /table text/ </table>
-        <caption> /caption text/ </caption>
-        <colgroup> /colgroup text/ </colgroup>
-        <col> /col text/ </col>
-        <tbody> /tbody text/ </tbody>
-        <thead> /thead text/ </thead>
-        <tfoot> /tfoot text/ </tfoot>
-        <tr> /tr text/ </tr>
-        <td> /td text/ </td>
-        <th> /th text/ </th>
+
         <form> /form text/ </form>
         <fieldset> /fieldset text/ </fieldset>
         <legend> /legend text/ </legend>
@@ -116,7 +110,31 @@
         <summary> /summary text/ </summary>
         <command> /command text/ </command>
         <menu> /menu text/ </menu>
-        
 
+        <table> /table text/
+            <caption> /caption text/ </caption>
+            <colgroup> /colgroup text/
+                <col> /col text/ </col>
+            </colgroup>
+            <!-- <thead> /stand alone thead/ </thead>
+                 <tbody> /stand alone tbody/ </tbody>
+                 <tfoot> /stand alone tfoot/ </tfoot> -->
+            <!-- <th> /stand alone th text/ </th>
+                 <tr> /stand alone tr text/ </tr>
+                 <td> /stand alone td text/ </td> -->
+            <!-- <thead> /thead text/
+                 <th> /th text/ </th>
+                 </thead>
+                 <tbody> /tbody text/
+                 <tr> /tr text/
+                 <td> /td text/ </td>
+                 </tr>
+                 </tbody>
+                 <tfoot> /tfoot text/
+                 <tr> /tr text/
+                 <td> /td text/ </td>
+                 </tr>
+                 </tfoot> -->
+        </table>
 </body>
 </html>

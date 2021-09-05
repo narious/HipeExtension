@@ -1,7 +1,8 @@
 htmltohipe_location = ../htmltohipe
 CC = gcc
 
-ALL: media flex-grid whitelist runwhitelist runmedia runflex-grid
+# ALL: media flex-grid whitelist runwhitelist runmedia runflex-grid
+ALL: media whitelist runwhitelist runmedia
 
 media: media.c
 	$(CC) media.c -o media -lhipe 
@@ -26,7 +27,7 @@ nav.c:
 
 runnav:
 	./nav
-	
+
 runwhitelist:
 	./whitelist
 
@@ -39,3 +40,8 @@ runflex-grid:
 clean:
 	rm *.c
 	rm media flex-grid whitelist
+
+whitelist2:
+	$(htmltohipe_location) whitelist-modified.html > whitelist.c
+	gcc whitelist.c -o whitelist -lhipe
+	./whitelist

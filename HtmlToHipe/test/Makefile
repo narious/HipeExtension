@@ -8,7 +8,7 @@ LFLAGS=-lgtest -lgtest_main -lpthread -lgumbo
 INC=
 
 # ALL: media flex-grid whitelist runwhitelist runmedia runflex-grid
-ALL: media whitelist
+ALL: media whitelist square square2 square3 nav flex-grid hipe-calc
 
 square: square.c
 	$(CC) square.c -o square -lhipe
@@ -66,7 +66,7 @@ runflex-grid:
 
 clean:
 	rm nav.c media.c whitelist.c square.c square2.c square3.c hipe-calc.c flex-grid.c \
-	media flex-grid whitelist square square2 square3 hipe-calc
+	media flex-grid whitelist square square2 square3 hipe-calc nav
 
 whitelist2:
 	$(htmltohipe) whitelist-modified.html > whitelist.c

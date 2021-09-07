@@ -1,9 +1,5 @@
 #include "tag.h"
 
-// Used for counting the number of media files for src tag (better way than gloabl?)
-int src_tag_count = 0;
-// Need to specify of the source files so it can be used in assigning later
-char * src_file_location[50];
 
 /**
  * mygumbo_count_nodes - Count the number of nodes in a gumbo tree rooted at a node
@@ -168,9 +164,8 @@ static void write_tag_attr(GumboElement *e, int fd)
 		a = (GumboAttribute *)e->attributes.data[i];
 		if (strcmp(a->name, "style") == 0) {
 			char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
-			char * consumable_str = (char*)malloc(strlen(a->name) * sizeof(char));
-			strcpy(consumable_str, a->value);
-			char * style_name = strtok(consumable_str, ":");
+			char * cp = strdup(a->value);
+			char * style_name = strtok(cp, ":");
 			char * style_val = strtok(NULL, ";");
 			while (style_val != NULL && style_name != NULL) {
 				// remove white spaces from the style_name
@@ -183,8 +178,9 @@ static void write_tag_attr(GumboElement *e, int fd)
 				style_val = strtok(NULL, ";");
 			}
 
-			free(consumable_str);
-		} else if (strcmp(a->name, "src") == 0) {
+			free(cp);
+			// May require more checking for e->tag since other attributes might have a src
+		} else if (strcmp(a->name, "src") == 0 && e->tag != GUMBO_TAG_SCRIPT) {
 			write_tag_src(a, fd);
 		} else {
 		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",

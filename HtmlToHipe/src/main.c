@@ -7,7 +7,7 @@
 #include "tag.h"
 
 // Setting a defualt source code directory, need to implment this later
-char * src_tag_directory ="data/";
+char * src_tag_directory ="../data/";
 
 void write_includes(int fd)
 {
@@ -49,7 +49,7 @@ void write_tag_src_handler(int fd) {
 	dprintf(fd, "\tstrcat(filefullpath, filesource);\n");
 	dprintf(fd, "\tFILE* file = fopen(filefullpath, \"r\");\n");
 	dprintf(fd, "\tif(!file) {\n");
-	dprintf(fd, "\t\t\tprintf(\"Could not open file: '%%s' for reading.\", filefullpath); return;}");
+	dprintf(fd, "\t\t\tprintf(\"Could not open file: '%%s' for reading.(probably wrong path?)\", filefullpath); return;}");
 	dprintf(fd, "\t\tfflush(stdout);\n");
 	dprintf(fd, "\tfseek(file, 0, SEEK_END);size_t size = ftell(file); rewind(file);char* data = malloc(size);size_t result = fread(data, 1, size, file);\n");
 	dprintf(fd, "\tif(result != size) {printf(\"Error reading file\");return;}\n");

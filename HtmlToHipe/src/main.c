@@ -42,7 +42,8 @@ void write_main(int fd)
 /**
  * Writes a function that handles src tags in the hipe cli
  */
-void write_tag_src_handler(int fd) {
+void write_tag_src_handler(int fd) 
+{
 	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char * filesource, char * mime) {\n");
 	dprintf(fd, "\tchar filefullpath[50];\n");
 	dprintf(fd, "\tstrcat(filefullpath, \"%s\");\n", src_tag_directory);

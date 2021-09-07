@@ -122,13 +122,16 @@ static void write_tag_text(GumboElement *e, int fd, char *html)
 	}
 }
 
-static void write_tag_src(GumboAttribute* a, int fd) {
+static void write_tag_src(GumboAttribute* a, int fd) 
+{
 	const char * filesource = a->value;
-	if (*filesource == '\0') return;
+	if (*filesource == '\0') 
+		return;
 
 	// Gets extension form the file
 	const char* dot = strrchr(filesource, '.');
-	if (!dot || dot == filesource) return;
+	if (!dot || dot == filesource) 
+		return;
 	dot++;
 	//Determine the correct mime (currently only 5 are supported)
 	char mime[25];
@@ -156,6 +159,26 @@ static void write_tag_src(GumboAttribute* a, int fd) {
 	dprintf(fd, "\thandle_tag_src(session, loc, \"%s\", \"%s\");\n", filesource, mime);
 }
 
+static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
+{
+		char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
+		char * cp = strdup(a->value);
+		char * style_name = strtok(cp, ":");
+		char * style_val = strtok(NULL, ";");
+		while (style_val != NULL && style_name != NULL) {
+			// remove white spaces from the style_name
+			// strncpy things
+			int i = 0;
+			while (isspace((unsigned char)*style_name)) style_name++;
+
+			dprintf(fd, "%s%s\",\"%s\");\n", st, style_name, style_val);
+			style_name = strtok(NULL, ":");
+			style_val = strtok(NULL, ";");
+		}
+		free(cp);
+		// May require more checking for e->tag since other attributes might have a src
+}
+
 static void write_tag_attr(GumboElement *e, int fd)
 {
 	GumboAttribute *a;
@@ -163,28 +186,12 @@ static void write_tag_attr(GumboElement *e, int fd)
 	for (int i = 0; i < e->attributes.length; ++i) {
 		a = (GumboAttribute *)e->attributes.data[i];
 		if (strcmp(a->name, "style") == 0) {
-			char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
-			char * cp = strdup(a->value);
-			char * style_name = strtok(cp, ":");
-			char * style_val = strtok(NULL, ";");
-			while (style_val != NULL && style_name != NULL) {
-				// remove white spaces from the style_name
-				// strncpy things
-				int i = 0;
-				while (isspace((unsigned char)*style_name)) style_name++;
-
-				dprintf(fd, "%s%s\",\"%s\");\n", st, style_name, style_val);
-				style_name = strtok(NULL, ":");
-				style_val = strtok(NULL, ";");
-			}
-
-			free(cp);
-			// May require more checking for e->tag since other attributes might have a src
+			write_tag_attr_inline_css(a, fd);
 		} else if (strcmp(a->name, "src") == 0 && e->tag != GUMBO_TAG_SCRIPT) {
 			write_tag_src(a, fd);
 		} else {
-		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
-			a->name, a->value);
+			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
+				a->name, a->value);
 		}
 	}
 }

@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#include "tag.h"
+#include "html.h"
 
 // Setting a defualt source code directory, need to implment this later
 char * src_tag_directory ="../data/";
@@ -70,7 +70,7 @@ void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
 {
 	write_includes(fd);
 	write_tag_src_handler(fd);
-	mygumbo_write_tags(g->root, fd, html);  // TODO rename
+	mygumbo_write_html(g->root, fd, html);  // TODO rename
 	write_main(fd);
 }
 

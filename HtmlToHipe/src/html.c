@@ -1,4 +1,4 @@
-#include "tag.h"
+#include "html.h"
 
 
 /**
@@ -402,14 +402,14 @@ static void write_header_tags(GumboNode *n, int fd, char *html)
 	dprintf(fd, "\n");
 }
 
-void mygumbo_write_tags(GumboNode *n, int fd, char *html)
+void mygumbo_write_html(GumboNode *n, int fd, char *html)
 {
 	if (n->type == GUMBO_NODE_ELEMENT) {
 		GumboElement *e = (GumboElement *)&n->v;
 
 		if (e->tag == GUMBO_TAG_HTML) {
 			for (int i = 0; i < e->children.length; ++i)
-				mygumbo_write_tags(e->children.data[i], fd, html);
+				mygumbo_write_html(e->children.data[i], fd, html);
 		} else if (e->tag == GUMBO_TAG_HEAD)
 			write_header_tags(n, fd, html);
 		else if (e->tag == GUMBO_TAG_BODY)

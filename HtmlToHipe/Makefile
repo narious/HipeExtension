@@ -1,4 +1,4 @@
-OBJS=build/main.o build/tag.o build/str.o
+OBJS=build/main.o build/html.o build/str.o
 CC=gcc
 CFLAGS=-c
 LFLAGS=-lgumbo

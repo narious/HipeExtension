@@ -304,17 +304,21 @@ static void write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 
 		tmp_next_id = next_id;
 
-		// 0th ID is for the body tag which doesn't need to have anything done
-		// since it's where all tags reside by default.
-		if (curid > 0) {
+		// 0th ID is for the body tag which doesn't need to have anything done.
+		if (curid > 0) 
 			handle_body_elem(e, fd, curid, html);
-			// Set each node's parent location.
-			for (i = 0; i < e->children.length; ++i) {
-				n = (GumboNode *)e->children.data[i];
-				if (n->type == GUMBO_NODE_ELEMENT) 
+		// Set each node's parent location.
+		for (i = 0; i < e->children.length; ++i) {
+			n = (GumboNode *)e->children.data[i];
+			if (n->type == GUMBO_NODE_ELEMENT)  {
+				if (curid > 0)
 					dprintf(fd, "\tplocs[%d] = loc;\n", next_id++);
+				else
+					// Don't need to print plocs for body with 0th id since covered by
+					// memset zero-initialising, but still need to keep track of IDs.
+					++next_id;  
 			}
-		} 
+		}
 		for (i = 0, j = 0; i < e->children.length; ++i)  {
 			n = (GumboNode *)e->children.data[i];
 			// TODO rm duplicate check for elt here and enter function

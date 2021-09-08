@@ -311,12 +311,11 @@ static void write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 		for (i = 0; i < e->children.length; ++i) {
 			n = (GumboNode *)e->children.data[i];
 			if (n->type == GUMBO_NODE_ELEMENT)  {
+				// Don't need to print plocs for body with 0th id since covered by
+				// memset zero-initialising, but still need to keep track of IDs.
 				if (curid > 0)
-					dprintf(fd, "\tplocs[%d] = loc;\n", next_id++);
-				else
-					// Don't need to print plocs for body with 0th id since covered by
-					// memset zero-initialising, but still need to keep track of IDs.
-					++next_id;  
+					dprintf(fd, "\tplocs[%d] = loc;\n", next_id);
+				++next_id;  
 			}
 		}
 		for (i = 0, j = 0; i < e->children.length; ++i)  {

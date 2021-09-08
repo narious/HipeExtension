@@ -16,6 +16,7 @@ void write_includes(int fd)
 	dprintf(fd, "#include <string.h>\n");
 	dprintf(fd, "#include <stdlib.h>\n");
 	dprintf(fd, "#include <stdio.h>\n");
+	dprintf(fd, "#include <sys/stat.h>\n");
 	dprintf(fd, "\n");
 }
 
@@ -39,26 +40,59 @@ void write_main(int fd)
 	dprintf(fd, "\treturn 0;\n");
 	dprintf(fd, "}");
 }
+
+
+void write_filesz_func(int fd)
+{
+	dprintf(fd, "int filesz(FILE *f)\n");
+	dprintf(fd, "{");
+	dprintf(fd, "\tstruct stat s;\n");
+	dprintf(fd, "\tint fd = fileno(f);\n");
+	dprintf(fd, "\tif (fstat(fd, &s) == -1)\n");
+	dprintf(fd, "\t\treturn -1;\n");
+	dprintf(fd, "\treturn s.st_size;\n");
+	dprintf(fd, "}\n");
+	dprintf(fd, "\n");
+}
+
 /**
  * Writes a function that handles src tags in the hipe cli
  */
 void write_tag_src_handler(int fd) 
 {
-	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char * filesource, char * mime) {\n");
-	dprintf(fd, "\tchar filefullpath[50];\n");
-	dprintf(fd, "\tstrcat(filefullpath, \"%s\");\n", src_tag_directory);
-	dprintf(fd, "\tstrcat(filefullpath, filesource);\n");
-	dprintf(fd, "\tFILE* file = fopen(filefullpath, \"r\");\n");
-	dprintf(fd, "\tif(!file) {\n");
-	dprintf(fd, "\t\t\tprintf(\"Could not open file: '%%s' for reading.(probably wrong path?)\", filefullpath); return;}");
-	dprintf(fd, "\t\tfflush(stdout);\n");
-	dprintf(fd, "\tfseek(file, 0, SEEK_END);size_t size = ftell(file); rewind(file);char* data = malloc(size);size_t result = fread(data, 1, size, file);\n");
-	dprintf(fd, "\tif(result != size) {printf(\"Error reading file\");return;}\n");
-	dprintf(fd, "\t\tfflush(stdout);\n");
-	dprintf(fd, "\thipe_instruction instr;hipe_instruction_init(&instr);instr.opcode = HIPE_OP_SET_SRC;instr.location = loc;instr.arg[0] = data; instr.arg_length[0]=size;instr.arg[1] = mime;instr.arg_length[1]=strlen(instr.arg[1]);\n");
-	dprintf(fd, "\thipe_send_instruction(session, instr); free(data);\n");
-	dprintf(fd,"}\n");
-	dprintf(fd,"\n");
+	write_filesz_func(fd);
+	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char *filesource, char *mime)\n");
+	dprintf(fd, "{\n");
+	dprintf(fd, "\tchar fpath[50];\n");
+	dprintf(fd, "\tFILE *f;\n");
+	dprintf(fd, "\tint fsz, res;\n");
+	dprintf(fd, "\tchar *s;\n");
+	dprintf(fd, "\thipe_instruction instr;\n");
+	dprintf(fd, "\tstrcat(fpath, \"%s\");\n", src_tag_directory);
+	dprintf(fd, "\tstrcat(fpath, filesource);\n");
+	dprintf(fd, "\tf = fopen(fpath, \"r\");\n");
+	dprintf(fd, "\tif (!f) {\n");
+	dprintf(fd, "\t\tperror(fpath);\n");  // TODO check null term on fpath?
+	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
+	dprintf(fd, "\t}\n");
+	dprintf(fd, "\tfsz = filesz(f);\n");
+	dprintf(fd, "\ts = malloc(fsz*sizeof(char));\n");
+	dprintf(fd, "\tres = fread(s, sizeof(char), fsz, f);\n");
+	dprintf(fd, "\tif (res == -1 || res != fsz) {\n");
+	dprintf(fd, "\t\tperror(\"fread\");\n");
+	dprintf(fd, "\t\texit(EXIT_FAILURE);\n");
+	dprintf(fd, "\t}\n");
+	dprintf(fd, "\thipe_instruction_init(&instr);\n");
+	dprintf(fd, "\tinstr.opcode = HIPE_OP_SET_SRC;\n");
+	dprintf(fd, "\tinstr.location = loc;\n");
+	dprintf(fd, "\tinstr.arg[0] = s;\n");
+	dprintf(fd, "\tinstr.arg_length[0] = fsz;\n");
+	dprintf(fd, "\tinstr.arg[1] = mime;\n");
+	dprintf(fd, "\tinstr.arg_length[1] = strlen(instr.arg[1]);\n");
+	dprintf(fd, "\thipe_send_instruction(session, instr);\n");
+	dprintf(fd, "\tfree(s);\n");
+	dprintf(fd, "}\n");
+	dprintf(fd, "\n");
 }
 
 

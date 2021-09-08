@@ -1,0 +1,11 @@
+body {
+    margin: 0;
+    background-color: grey;
+
+}
+
+#canv {
+    background-color: white;
+    border: 2px inset;
+
+}

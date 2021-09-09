@@ -1,0 +1,23 @@
+body {
+    background-color: black;
+    font-family: arieal, sans-serif;
+    color:green;
+}
+
+#clock {
+    background-color: #052205;
+    color: white;
+    vertical-align: top;
+    border: 3px inset green;
+    border-radius: 0.1em;
+    bottom: 20%;
+    left: 25%;
+    position: absolute;
+    font-size: 400%;
+    padding: 0.25em;
+    text-shadow: 2px 2px green;
+}
+
+#small_digits {
+    font-size: 50%;
+}

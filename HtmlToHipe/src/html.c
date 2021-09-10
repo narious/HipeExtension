@@ -291,7 +291,7 @@ static void handle_body_elem(GumboElement *e, int fd, int curid, char *html)
 		handle_tag_style(e, fd, html);
 }
 
-int next_id = 0;
+static int next_id = 0;
 
 /**
  * @curid: current node's ID

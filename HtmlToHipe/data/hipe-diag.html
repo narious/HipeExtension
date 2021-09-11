@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="hipe-diag.css">
+<body>
+    <button id="dialogButton">Show dialog</button>
+    <button id="dialog2Button">Show dialog with no options</button>
+    <button id="textDialogButton">Show text input dialog</button>
+    <button id="fifoOpenButton">Open FIFO resource</button>
+    <hr>
+    Dialog Demo <br>
+    This program allows you to test multiple kinds of interaction with the broader 
+    environment, including displaying a dialog box with multiple items, displaying a dialog 
+    prompt with free-form input, and requesting a FIFO resource, such as a file on disk. 
+    <br>
+    <br>
+    Note: the behaviour will differ depending on the environment this program runs 
+    in. If the application runs at the top level, Hipe itself will service the requests 
+    with system-standard prompts. If the application runs within a framing manager that 
+    supports these actions, the framing manager will manage the requests instead. Nothing 
+    happens if the framing manager does not implement these functions.
+
+    <input id="fileInput" type="file" style="display:none;"/>
+
+
+    <dialog id="dialogBox">
+        <div class="banner"></div>
+        <form class= "diagForm" method="dialog">
+        <p><label>Dialog prompt text <br>
+            <select id="select1" style="width: 100%;">
+            <option>Choice A</option>
+            <option>Choice B</option>
+            <option>————</option>
+            <option>Choice 1</option>
+            <option>Choice 2</option>
+            <option>Choice 3</option>
+            </select>
+        </label></p>
+        <menu style="padding-inline-start: 0;">
+            <button id="cancelBtn" value="cancel" > <img src="media-source/remove.png">Cancel</button>
+            <button id="confirmBtn" value="default"> <img src="media-source/check.png">Confirm</button>
+        </menu>
+        </form>       
+    </dialog>
+
+    <dialog id="dialogSimple">
+        <div class="banner"></div>
+        <form  class= "diagForm" method="dialog">
+            <p>Some simple text</p>
+            <button id="okBtn" value="default" style="float: right;"> <img src="media-source/check.png">Ok</button>
+        </form>
+    </dialog>
+
+</body>
+</html>
+<script src="hipe-diag.js"></script>

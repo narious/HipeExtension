@@ -1,47 +1,26 @@
 htmltohipe_location = ../htmltohipe
 CC = gcc
+CFLAGS = -lhipe
+TESTS = $(wildcard *.html)
+OBJECTS = $(patsubst %.html,%.out,$(wildcard *.html))
 
-# ALL: media flex-grid whitelist runwhitelist runmedia runflex-grid
-ALL: media whitelist runwhitelist runmedia
+all: $(OBJECTS)
 
-media: media.c
-	$(CC) media.c -o media -lhipe 
+%.out: %.c
+	$(CC) $< $(CFLAGS) -o $@
 
-media.c: 
-	$(htmltohipe_location) media.html > media.c
+%.c: %.html
+	$(htmltohipe_location) $< > $@
 
-flex-grid: flex-grid.c
-	$(CC) flex-grid.c -o flex-grid -lhipe 
-flex-grid.c:
-	$(htmltohipe_location) flex-grid.html > flex-grid.c
+# example: make testbutton -j
+test%: run% browser%
+	echo $@
 
-whitelist: whitelist.c
-	$(CC) whitelist.c -o whitelist -lhipe 
-whitelist.c:
-	$(htmltohipe_location) whitelist.html > whitelist.c
+run%: %.out
+	./$<
 
-nav: nav.c
-	$(CC) nav.c -o nav -lhipe
-nav.c:
-	$(htmltohipe_location) nav.html > nav.c
-
-runnav:
-	./nav
-
-runwhitelist:
-	./whitelist
-
-runmedia:
-	./media
-
-runflex-grid:
-	./flex-grid
+browser%: %.html
+	chromium ./$<
 
 clean:
-	rm *.c
-	rm media flex-grid whitelist
-
-whitelist2:
-	$(htmltohipe_location) whitelist-modified.html > whitelist.c
-	gcc whitelist.c -o whitelist -lhipe
-	./whitelist
+	rm -f *.c *.out

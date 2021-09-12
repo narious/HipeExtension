@@ -2,6 +2,56 @@
 
 Author: Di Liu
 
+## Second Attempt <2021-09-12 Sun>
+
+### Button
+
+Different layout to both firefox and chromium, animation works properly.
+
+- background color
+
+- `div` layout
+
+![](./source/2nd_button.png)
+
+
+### flex-grid
+
+`caption` tag will cause same table problem as first attempt.
+
+### hipe-*
+
+All not working properly because current version is not support javascript yet.
+
+### nav
+
+- wired text order inside `nav`
+    unknown reason
+
+- `aside` not working properly
+    This is true even using absolute path to import css file.
+    May becasue of underlying QtWebkit.
+
+[](./source/2nd_nav.png)
+
+### square
+
+error from `hiped`
+```bash
+╰─>$ CSS file not found - check file path.
+square.css
+```
+
+### square2
+
+working properly
+
+### square3
+
+`.flex` class does not rendered properly. May becasue of underlying QtWebkit.
+
+![](./source/2nd_square3.png)
+
 ## First Attempt <2021-09-05 Sun>
 
 ### Compilation Result

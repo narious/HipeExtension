@@ -7,8 +7,7 @@ CFLAGS=-c -Wall
 LFLAGS=-lgtest -lgtest_main -lpthread -lgumbo
 INC=
 
-# ALL: media flex-grid whitelist runwhitelist runmedia runflex-grid
-ALL: media whitelist square square2 square3 nav flex-grid hipe-calc
+ALL: media whitelist square square2 square3 nav flex-grid hipe-calc button hipe-canvas hipe-clock hipe-diag
 
 square: square.c
 	$(CC) square.c -o square -lhipe
@@ -42,8 +41,15 @@ flex-grid: flex-grid.c
 flex-grid.c:
 	$(htmltohipe) $(data)flex-grid.html > flex-grid.c
 
+button: button.c
+	$(CC) button.c -o button -lhipe 
+
+button.c:
+	$(htmltohipe) $(data)button.html > button.c
+
 whitelist: whitelist.c
 	$(CC) whitelist.c -o whitelist -lhipe 
+
 whitelist.c:
 	$(htmltohipe) $(data)whitelist.html > whitelist.c
 
@@ -51,6 +57,27 @@ nav: nav.c
 	$(CC) nav.c -o nav -lhipe
 nav.c:
 	$(htmltohipe) $(data)nav.html > nav.c
+
+hipe-canvas: hipe-canvas.c
+	$(CC) hipe-canvas.c -o hipe-canvas -lhipe 
+
+hipe-canvas.c:
+	$(htmltohipe) $(data)hipe-canvas.html > hipe-canvas.c
+
+hipe-clock: hipe-clock.c
+	$(CC) hipe-clock.c -o hipe-clock -lhipe 
+
+hipe-clock.c:
+	$(htmltohipe) $(data)hipe-clock.html > hipe-clock.c
+
+hipe-diag: hipe-diag.c
+	$(CC) hipe-diag.c -o hipe-diag -lhipe 
+
+hipe-diag.c:
+	$(htmltohipe) $(data)hipe-diag.html > hipe-diag.c
+
+runALL:
+	./nav && ./square && ./square2 && ./flex-grid && ./media && ./hipe_calc
 
 runnav:
 	./nav
@@ -65,8 +92,9 @@ runflex-grid:
 	./flex-grid
 
 clean:
-	rm nav.c media.c whitelist.c square.c square2.c square3.c hipe-calc.c flex-grid.c \
-	media flex-grid whitelist square square2 square3 hipe-calc nav
+	rm nav.c media.c whitelist.c square.c square2.c square3.c hipe-calc.c flex-grid.c button.c \
+	hipe-canvas.c hipe-clock.c hipe-diag.c \
+	media flex-grid whitelist square square2 square3 hipe-calc nav button hipe-canvas hipe-clock hipe-diag
 
 whitelist2:
 	$(htmltohipe) whitelist-modified.html > whitelist.c

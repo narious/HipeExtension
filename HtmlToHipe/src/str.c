@@ -119,3 +119,14 @@ char *str_rm_tab_nl(char *s)
 	s[n] = '\0';
 	return realloc(s, n+1);
 }
+
+char *strnewcpy(const char *src)
+{
+	char *dest;
+	int n = strlen(src);
+
+	// Add 1 for null term.
+	dest = malloc((n+1)*sizeof(char));
+	strncpy(dest, src, n+1);
+	return dest;
+}

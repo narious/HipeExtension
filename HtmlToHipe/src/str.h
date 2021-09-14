@@ -43,4 +43,9 @@ char *str_rm_strconst_tab_nl(char *s);
  */
 char *str_rm_tab_nl(char *s);
 
+/**
+ * strnewcpy - Get a dynamically allocated new copy of a string
+ */
+char *strnewcpy(const char *src);
+
 #endif

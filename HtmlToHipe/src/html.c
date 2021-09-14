@@ -57,6 +57,8 @@ static void write_append_tag(int fd, int curid, const char *tagname)
  *
  * Returned string is dynamically allocated and must be freed with free.
  * Return NULL if tag has no text.
+ * TODO can get rid of this func since not used anymore and replaced with gumboparser's
+ * text
  */
 static char *get_tag_text(GumboElement *e, char *s)
 {
@@ -110,9 +112,35 @@ static char *get_tag_text(GumboElement *e, char *s)
 	return text;
 }
 
+/**
+ * get_first_gumbo_text - Get the text from the first found GumboText child
+ *	that an element has
+ *
+ * Return NULL for no such text. Returns a dynamically allocated copy of the text
+ * which should be freed with free.
+ */
+static char *get_first_gumbo_text(GumboElement *e)
+{
+	GumboNode *n;
+	GumboText *t = NULL;
+
+	for (int i = 0; i < e->children.length; ++i) {
+		n = (GumboNode *)e->children.data[i];
+
+		if (n->type == GUMBO_NODE_TEXT || n->type == GUMBO_NODE_CDATA ||
+		    n->type == GUMBO_NODE_COMMENT || n->type == GUMBO_NODE_WHITESPACE) {
+			t = (GumboText *)&n->v;
+			break;
+		}
+	}
+	if (t) 
+		return strnewcpy(t->text);
+	return NULL;
+}
+
 static void write_tag_text(GumboElement *e, int fd, char *html)
 {
-	char *s = get_tag_text(e, html);
+	char *s = get_first_gumbo_text(e);
 
 	if (s) {
 		s = str_rm_tab_nl(s);
@@ -351,7 +379,7 @@ static void write_body_tags(GumboNode *n, int fd, char *html)
 
 static void handle_head_tag_title(GumboElement *e, int fd, char *html)
 {
-	char *s = get_tag_text(e, html);
+	char *s = get_first_gumbo_text(e);
 
 	if (s) {
 		dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TITLE, 0, 0, 1, \"%s\");\n", s);

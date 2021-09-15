@@ -140,13 +140,25 @@ static char *get_first_gumbo_text(GumboElement *e)
 
 static void write_tag_text(GumboElement *e, int fd, char *html)
 {
-	char *s = get_first_gumbo_text(e);
+	GumboNode *n;
+	GumboText *t;
+	char *s;
+	int cnt = 0;
 
-	if (s) {
-		s = str_rm_tab_nl(s);
-		if (!allwhitespace(s))
-			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_TEXT, 0, loc, 1, \"%s\");\n", s);
-		free(s);
+	for (int i = 0; i < e->children.length; ++i) {
+		n = (GumboNode *)e->children.data[i];
+
+		if (n->type == GUMBO_NODE_TEXT || n->type == GUMBO_NODE_CDATA ||
+		    n->type == GUMBO_NODE_COMMENT || n->type == GUMBO_NODE_WHITESPACE) {
+			t = (GumboText *)&n->v;
+			if (!allwhitespace(t->text)) {
+				s = str_escape_nl(t->text);
+				// First found text gets set, rest gets appended. 
+				dprintf(fd, "\thipe_send(session, %s, 0, loc, 1, \"%s\");\n", 
+					cnt++ ? "HIPE_OP_APPEND_TEXT" : "HIPE_OP_SET_TEXT", s);
+				free(s);
+			}
+		}
 	}
 }
 
@@ -305,16 +317,14 @@ static void handle_body_elem(GumboElement *e, int fd, int curid, char *html)
 {
 	// 0th ID is for the body tag which doesn't need a tag added, but it still
 	// needs attributes in case it has something like style.
-	if (curid > 0) {
+	if (curid > 0)
 		write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
-		write_tag_attr(e, fd);
+	write_tag_attr(e, fd);
 
-		if (e->tag != GUMBO_TAG_STYLE)
-			write_tag_text(e, fd, html);
-		else
-			handle_tag_style(e, fd, html);
-	} else
-		write_tag_attr(e, fd);
+	if (e->tag != GUMBO_TAG_STYLE) 
+		write_tag_text(e, fd, html);
+	else
+		handle_tag_style(e, fd, html);
 }
 
 static int next_id = 0;

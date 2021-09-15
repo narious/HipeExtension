@@ -14,7 +14,7 @@ bool whitespace(char c);
 /**
  * allwhitespace - Get whether a string is all whitespace
  */
-bool allwhitespace(char *s);
+bool allwhitespace(const char *s);
 
 /**
  * str_contains - Get whether a string contains a character
@@ -24,10 +24,9 @@ bool str_contains(char *s, char c);
 /**
  * str_escape_nl - Convert all newlines in a string to escaped newlines
  *
- * Assumes the input string is dynamically allocated and reallocates its memory. Returns the
- * result of realloc.
+ * Return is dynamically allocated and should be freed with free.
  */
-char *str_escape_nl(char *s);
+char *str_escape_nl(const char *s);
 
 /**
  * str_rm_strconst_tab_nl - Remove all tabs and newlines within string constants found within the

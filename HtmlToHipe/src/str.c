@@ -5,7 +5,7 @@ bool whitespace(char c)
 	return c == ' ' || c == '\t' || c == '\n';
 }
 
-bool allwhitespace(char *s)
+bool allwhitespace(const char *s)
 {
 	int n = strlen(s);
 
@@ -27,7 +27,7 @@ bool str_contains(char *s, char c)
 	return false;
 }
 
-int str_count(char *s, char c)
+int str_count(const char *s, char c)
 {
 	int cnt, n;
 
@@ -41,7 +41,7 @@ int str_count(char *s, char c)
 	return cnt;
 }
 
-char *str_escape_nl(char *s)
+char *str_escape_nl(const char *s)
 {
 	// Read, write, length, and number of newlines.
 	int r, w, n, nnl; 
@@ -49,7 +49,7 @@ char *str_escape_nl(char *s)
 
 	n = strlen(s);
 	nnl = str_count(s, '\n');
-	t = malloc((n+nnl)*sizeof(char));
+	t = malloc((n+1+nnl)*sizeof(char));
 
 	w = 0;
 	for (r = 0; r < n; ++r, ++w) {
@@ -57,8 +57,9 @@ char *str_escape_nl(char *s)
 			t[w++] = '\\';
 			t[w] = 'n';
 		} else
-			t[w] =s[r];
+			t[w] = s[r];
 	}
+	t[w] = '\0';
 	return t;
 }
 

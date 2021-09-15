@@ -163,48 +163,41 @@ static void write_tag_src(GumboAttribute* a, int fd)
 	dot++;
 	//Determine the correct mime (currently only 5 are supported)
 	char mime[25];
-	if (strcmp(dot, "mp3") == 0) {
+	if (strcmp(dot, "mp3") == 0) 
 		strncpy(mime, "audio/mp3", 25);
-
-	} else if (strcmp(dot, "mp4") == 0) {
+	else if (strcmp(dot, "mp4") == 0) 
 		strncpy(mime, "video/mp4", 25);
-
-	} else if (strcmp(dot, "png") == 0) {
+	else if (strcmp(dot, "png") == 0) 
 		strncpy(mime, "image/png", 25);
-		
-	} else if (strcmp(dot, "jpeg") == 0 || strcmp(dot, "jpg") == 0) {
+	else if (strcmp(dot, "jpeg") == 0 || strcmp(dot, "jpg") == 0) 
 		strncpy(mime, "image/jpeg", 25);
-		
-	} else if (strcmp(dot, "aac") == 0) {
+	else if (strcmp(dot, "aac") == 0) 
 		strncpy(mime, "audio/aac", 25);
-		
-	} else if (strcmp(dot, "webm") == 0) {
+	else if (strcmp(dot, "webm") == 0) 
 		strncpy(mime, "video/wbm", 25);
-	
-	} else {
+	else 
 		strncpy(mime, "", 25);
-	}
 	dprintf(fd, "\thandle_tag_src(session, loc, \"%s\", \"%s\");\n", filesource, mime);
 }
 
 static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
 {
-		char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
-		char * cp = strdup(a->value);
-		char * style_name = strtok(cp, ":");
-		char * style_val = strtok(NULL, ";");
-		while (style_val != NULL && style_name != NULL) {
-			// remove white spaces from the style_name
-			// strncpy things
-			int i = 0;
-			while (isspace((unsigned char)*style_name)) style_name++;
+	char * st = "\thipe_send(session, HIPE_OP_SET_STYLE, 0, loc, 2, \"";
+	char * cp = strdup(a->value);
+	char * style_name = strtok(cp, ":");
+	char * style_val = strtok(NULL, ";");
+	while (style_val != NULL && style_name != NULL) {
+		// remove white spaces from the style_name
+		// strncpy things
+		int i = 0;
+		while (isspace((unsigned char)*style_name)) style_name++;
 
-			dprintf(fd, "%s%s\",\"%s\");\n", st, style_name, style_val);
-			style_name = strtok(NULL, ":");
-			style_val = strtok(NULL, ";");
-		}
-		free(cp);
-		// May require more checking for e->tag since other attributes might have a src
+		dprintf(fd, "%s%s\",\"%s\");\n", st, style_name, style_val);
+		style_name = strtok(NULL, ":");
+		style_val = strtok(NULL, ";");
+	}
+	free(cp);
+	// May require more checking for e->tag since other attributes might have a src
 }
 
 static void write_tag_attr(GumboElement *e, int fd)
@@ -213,14 +206,14 @@ static void write_tag_attr(GumboElement *e, int fd)
 	
 	for (int i = 0; i < e->attributes.length; ++i) {
 		a = (GumboAttribute *)e->attributes.data[i];
-		if (strcmp(a->name, "style") == 0) {
+
+		if (strcmp(a->name, "style") == 0) 
 			write_tag_attr_inline_css(a, fd);
-		} else if (strcmp(a->name, "src") == 0 && e->tag != GUMBO_TAG_SCRIPT) {
+		else if (strcmp(a->name, "src") == 0 && e->tag != GUMBO_TAG_SCRIPT) 
 			write_tag_src(a, fd);
-		} else {
+		else 
 			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
 				a->name, a->value);
-		}
 	}
 }
 
@@ -310,13 +303,18 @@ static void handle_tag_style(GumboElement *e, int fd, char *html)
 
 static void handle_body_elem(GumboElement *e, int fd, int curid, char *html)
 {
-	write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
-	write_tag_attr(e, fd);
+	// 0th ID is for the body tag which doesn't need a tag added, but it still
+	// needs attributes in case it has something like style.
+	if (curid > 0) {
+		write_append_tag(fd, curid, gumbo_normalized_tagname(e->tag));
+		write_tag_attr(e, fd);
 
-	if (e->tag != GUMBO_TAG_STYLE)
-		write_tag_text(e, fd, html);
-	else
-		handle_tag_style(e, fd, html);
+		if (e->tag != GUMBO_TAG_STYLE)
+			write_tag_text(e, fd, html);
+		else
+			handle_tag_style(e, fd, html);
+	} else
+		write_tag_attr(e, fd);
 }
 
 static int next_id = 0;
@@ -332,9 +330,7 @@ static void write_body_tags_aux(GumboNode *n, int fd, int curid, char *html)
 
 		tmp_next_id = next_id;
 
-		// 0th ID is for the body tag which doesn't need to have anything done.
-		if (curid > 0) 
-			handle_body_elem(e, fd, curid, html);
+		handle_body_elem(e, fd, curid, html);
 		// Set each node's parent location.
 		for (i = 0; i < e->children.length; ++i) {
 			n = (GumboNode *)e->children.data[i];

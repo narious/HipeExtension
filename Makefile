@@ -20,5 +20,3 @@ build/%.o: %.cpp
 clean:
 	rm main build/*.o *.o output.txt
 
-ctags:
-	myctags -R . /usr/include/gtest

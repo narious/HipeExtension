@@ -13,5 +13,3 @@ build/%.o: src/%.c
 clean:
 	rm htmltohipe build/*.o tmp.c cli
 
-ctags:
-	myctags -R . /usr/include/gumbo.h

@@ -176,7 +176,7 @@ static void write_tag_src(GumboAttribute* a, int fd)
 	if (!dot || dot == filesource) 
 		return;
 	dot++;
-	//Determine the correct mime (currently only 5 are supported)
+	//Determine the correct mime (currently only 5 are supported TODO: write more)
 	char mime[25];
 	if (strcmp(dot, "mp3") == 0) 
 		strncpy(mime, "audio/mp3", 25);
@@ -211,7 +211,6 @@ static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
 		style_val = strtok(NULL, ";");
 	}
 	free(cp);
-	// May require more checking for e->tag since other attributes might have a src
 }
 
 // Handles the link tag and sets up events in hipe
@@ -225,6 +224,7 @@ static void handle_tag_a(GumboAttribute *a, int fd) {
 	c_event.key = click_event_counter;
 	click_events[click_event_counter] = c_event;
 	click_event_counter++;
+
 }
 
 static void write_tag_attr(GumboElement *e, int fd)

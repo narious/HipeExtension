@@ -21,14 +21,21 @@ void write_includes(int fd)
 	dprintf(fd, "\n");
 }
 
-// if (instr.requestor == 'g') open_link(session, "https://www.google.com.au/");
-// hipe_send(session, HIPE_OP_OPEN_LINK, 0, 0, 1, link);
 void write_handle_link_events(int fd) {
 	dprintf(fd, "void handle_link_events(hipe_session session, hipe_instruction instr) {\n");
 	// Currently only weblinks gwill work
 	for (int i = 0; i < click_event_counter; i++) {
 		dprintf(fd, "\tif (instr.requestor == %d) hipe_send(session, HIPE_OP_OPEN_LINK, 0, 0, 1, \"%s\");\n", click_events[i].key, click_events[i].href);
 	}
+	dprintf(fd, "}\n\n");
+}
+
+void write_hipe_apply_defualt_styles(int fd) {
+	dprintf(fd, "void hipe_apply_defualt_styles(hipe_session session) {\n");
+	dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"a\", \"color:rgb(6,69,173);text-decoration:underline; text-decoration-color: rgb(6,69,173);\");\n");
+	dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"a:hover\", \"color:rgb(11,0,128);text-decoration:underline; text-decoration-color: rgb(11,0,128);\");\n");
+	dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"a:active\", \"color:rgb(11,0,128);text-decoration:underline; text-decoration-color: rgb(11,0,128);\");\n");
+	dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"a:visited\", \"color:rgb(11,0,128);text-decoration:underline; text-decoration-color: rgb(11,0,128);\");\n");
 	dprintf(fd, "}\n\n");
 }
 
@@ -44,6 +51,7 @@ void write_main(int fd)
 	dprintf(fd, "\thipe_instruction_init(&instr);\n");
 	dprintf(fd, "\thipe_build_html_body(session);\n");
 	dprintf(fd, "\thipe_build_html_head(session);\n");
+	dprintf(fd, "\thipe_apply_defualt_styles(session);\n");
 	dprintf(fd, "\tfor (;;) {\n");
 	dprintf(fd, "\t\thipe_next_instruction(session, &instr, 1);\n");
 	dprintf(fd, "\t\tif (instr.opcode == HIPE_OP_FRAME_CLOSE)\n");
@@ -120,6 +128,7 @@ void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
 {
 	write_includes(fd);
 	write_tag_src_handler(fd);
+	write_hipe_apply_defualt_styles(fd);
 	mygumbo_write_html(g->root, fd, html);  // TODO rename
 	write_handle_link_events(fd);
 	write_main(fd);

@@ -12,6 +12,10 @@
 #include <unistd.h>
 #include <ctype.h>
 #include "str.h"
+#include "events.h"
+
+extern struct click_event click_events[BUFSIZ];
+extern int click_event_counter;
 
 /**
  * mygumbo_write_html - Write all HTML tags in a Gumbo representation of

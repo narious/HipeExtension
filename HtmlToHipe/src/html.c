@@ -1,5 +1,8 @@
 #include "html.h"
 
+// Holds the event data
+struct click_event click_events[BUFSIZ];
+int click_event_counter = 0;
 
 /**
  * mygumbo_count_nodes - Count the number of nodes in a gumbo tree rooted at a node
@@ -200,7 +203,6 @@ static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
 	char * style_val = strtok(NULL, ";");
 	while (style_val != NULL && style_name != NULL) {
 		// remove white spaces from the style_name
-		// strncpy things
 		int i = 0;
 		while (isspace((unsigned char)*style_name)) style_name++;
 
@@ -210,6 +212,19 @@ static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
 	}
 	free(cp);
 	// May require more checking for e->tag since other attributes might have a src
+}
+
+// Handles the link tag and sets up events in hipe
+static void handle_tag_a(GumboAttribute *a, int fd) {
+	struct click_event c_event;
+	// Registers the hipe operation hipe_send(session, HIPE_OP_EVENT_REQUEST, 'g', loc, 2, "click", "clicked on googleru");
+	dprintf(fd, "\thipe_send(session, HIPE_OP_EVENT_REQUEST, %d, loc, 2, \"click\", \"\");\n", click_event_counter);
+
+	// Creating struct to be later handled in event handler function
+	c_event.href = a->value;
+	c_event.key = click_event_counter;
+	click_events[click_event_counter] = c_event;
+	click_event_counter++;
 }
 
 static void write_tag_attr(GumboElement *e, int fd)
@@ -223,6 +238,8 @@ static void write_tag_attr(GumboElement *e, int fd)
 			write_tag_attr_inline_css(a, fd);
 		else if (strcmp(a->name, "src") == 0 && e->tag != GUMBO_TAG_SCRIPT) 
 			write_tag_src(a, fd);
+		else if (strcmp(a->name, "href") == 0 && e->tag == GUMBO_TAG_A)
+			handle_tag_a(a, fd);
 		else 
 			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
 				a->name, a->value);
@@ -463,4 +480,5 @@ void mygumbo_write_html(GumboNode *n, int fd, char *html)
 		else if (e->tag == GUMBO_TAG_BODY)
 			write_body_tags(n, fd, html);
 	}
+
 }

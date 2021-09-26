@@ -5,6 +5,7 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 #include "html.h"
+#include "events.h"
 
 // Setting a defualt source code directory, need to implment this later
 char * src_tag_directory ="../data/";
@@ -20,6 +21,17 @@ void write_includes(int fd)
 	dprintf(fd, "\n");
 }
 
+// if (instr.requestor == 'g') open_link(session, "https://www.google.com.au/");
+// hipe_send(session, HIPE_OP_OPEN_LINK, 0, 0, 1, link);
+void write_handle_link_events(int fd) {
+	dprintf(fd, "void handle_link_events(hipe_session session, hipe_instruction instr) {\n");
+	// Currently only weblinks gwill work
+	for (int i = 0; i < click_event_counter; i++) {
+		dprintf(fd, "\tif (instr.requestor == %d) hipe_send(session, HIPE_OP_OPEN_LINK, 0, 0, 1, \"%s\");\n", click_events[i].key, click_events[i].href);
+	}
+	dprintf(fd, "}\n\n");
+}
+
 void write_main(int fd)
 {
 	dprintf(fd, "int main(void)\n");
@@ -33,8 +45,11 @@ void write_main(int fd)
 	dprintf(fd, "\thipe_build_html_body(session);\n");
 	dprintf(fd, "\thipe_build_html_head(session);\n");
 	dprintf(fd, "\tfor (;;) {\n");
-	dprintf(fd, "\t\tif (hipe_next_instruction(session, &instr, 1) && instr.opcode == HIPE_OP_FRAME_CLOSE)\n");
+	dprintf(fd, "\t\thipe_next_instruction(session, &instr, 1);\n");
+	dprintf(fd, "\t\tif (instr.opcode == HIPE_OP_FRAME_CLOSE)\n");
 	dprintf(fd, "\t\t\tbreak;\n");
+	dprintf(fd, "\t\tif (instr.opcode == HIPE_OP_EVENT)\n");
+	dprintf(fd, "\t\t\thandle_link_events(session, instr);\n");
 	dprintf(fd, "\t}\n");
 	dprintf(fd, "\thipe_close_session(session);\n");
 	dprintf(fd, "\treturn 0;\n");
@@ -106,6 +121,7 @@ void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
 	write_includes(fd);
 	write_tag_src_handler(fd);
 	mygumbo_write_html(g->root, fd, html);  // TODO rename
+	write_handle_link_events(fd);
 	write_main(fd);
 }
 

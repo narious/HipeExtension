@@ -27,7 +27,7 @@ square3.c :
 hipe-calc: hipe-calc.c
 	$(CC) hipe-calc.c -o hipe-calc -lhipe 
 hipe-calc.c :
-	$(htmltohipe) $(data)hipe_calc.html > hipe-calc.c
+	$(htmltohipe) $(data)hipe-calc.html > hipe-calc.c
 
 media: media.c
 	$(CC) media.c -o media -lhipe 

@@ -214,7 +214,8 @@ static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
 }
 
 // Handles the link tag and sets up events in hipe
-static void handle_tag_a(GumboAttribute *a, int fd) {
+static void handle_tag_a(GumboAttribute *a, int fd) 
+{
 	struct click_event c_event;
 	// Registers the hipe operation hipe_send(session, HIPE_OP_EVENT_REQUEST, 'g', loc, 2, "click", "clicked on googleru");
 	dprintf(fd, "\thipe_send(session, HIPE_OP_EVENT_REQUEST, %d, loc, 2, \"click\", \"\");\n", click_event_counter);
@@ -224,7 +225,6 @@ static void handle_tag_a(GumboAttribute *a, int fd) {
 	c_event.key = click_event_counter;
 	click_events[click_event_counter] = c_event;
 	click_event_counter++;
-
 }
 
 static void write_tag_attr(GumboElement *e, int fd)

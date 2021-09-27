@@ -70,7 +70,6 @@
         <mark> /mark text/ </mark>
         <q> /q text/ </q>
         <br> /br text/ </br>
-        <source> /source text/ </source>
 
         <ruby>
             漢 <rp>(</rp><rt>ㄏㄢˋ</rt><rp>)</rp>
@@ -95,46 +94,57 @@
         <form> /form text/ </form>
         <fieldset> /fieldset text/ </fieldset>
         <legend> /legend text/ </legend>
-        <label> /label text/ </label>
         <input> /input text/ </input>
         <button> /button text/ </button>
         <select> /select text/ </select>
         <datalist> /datalist text/ </datalist>
-        <optgroup> /optgroup text/ </optgroup>
-        <option> /option text/ </option>
         <textarea> /textarea text/ </textarea>
         <output> /output text/ </output>
         <progress> /progress text/ </progress>
         <meter> /meter text/ </meter>
-        <details> /details text/ </details>
-        <summary> /summary text/ </summary>
+
+        <details>
+            <summary> /summary text/ </summary>
+            <p>/details text/ </p>
+        </details>
+
         <command> /command text/ </command>
         <menu> /menu text/ </menu>
+
+        <label> /label text/ </label>
+        <select>
+            <optgroup>
+            <option>Volvo</option>
+            <option>Saab</option>
+            <option>Opel</option>
+            <option>Audi</option>
+            </optgroup>
+        </select>
 
         <table> /table text/
             <caption> /caption text/ </caption>
             <colgroup> /colgroup text/
                 <col> /col text/ </col>
             </colgroup>
-            <!-- <thead> /stand alone thead/ </thead>
-                 <tbody> /stand alone tbody/ </tbody>
-                 <tfoot> /stand alone tfoot/ </tfoot> -->
-            <!-- <th> /stand alone th text/ </th>
-                 <tr> /stand alone tr text/ </tr>
-                 <td> /stand alone td text/ </td> -->
-            <!-- <thead> /thead text/
-                 <th> /th text/ </th>
-                 </thead>
-                 <tbody> /tbody text/
-                 <tr> /tr text/
-                 <td> /td text/ </td>
-                 </tr>
-                 </tbody>
-                 <tfoot> /tfoot text/
-                 <tr> /tr text/
-                 <td> /td text/ </td>
-                 </tr>
-                 </tfoot> -->
+            <thead> /stand alone thead/ </thead>
+            <tbody> /stand alone tbody/ </tbody>
+            <tfoot> /stand alone tfoot/ </tfoot>
+            <th> /stand alone th text/ </th>
+            <tr> /stand alone tr text/ </tr>
+            <td> /stand alone td text/ </td>
+            <thead> /thead text/
+                <th> /th text/ </th>
+            </thead>
+            <tbody> /tbody text/
+                <tr> /tr text/
+                    <td> /td text/ </td>
+                </tr>
+            </tbody>
+            <tfoot> /tfoot text/
+                <tr> /tr text/
+                    <td> /td text/ </td>
+                </tr>
+            </tfoot>
         </table>
 </body>
 </html>

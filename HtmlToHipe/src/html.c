@@ -151,9 +151,11 @@ static void write_tag_text(GumboElement *e, int fd, char *html)
 	for (int i = 0; i < e->children.length; ++i) {
 		n = (GumboNode *)e->children.data[i];
 
-		if (n->type == GUMBO_NODE_TEXT || n->type == GUMBO_NODE_CDATA ||
-		    n->type == GUMBO_NODE_COMMENT || n->type == GUMBO_NODE_WHITESPACE) {
+		// TODO what's cdata?
+		if (n->type == GUMBO_NODE_TEXT || n->type == GUMBO_NODE_CDATA) {
 			t = (GumboText *)&n->v;
+			// TODO might not need check for all whitespace anymore since got rid of
+			// accepting nodes which are GUMBO_NODE_WHITESPACE
 			if (!allwhitespace(t->text)) {
 				s = str_escape_nl(t->text);
 				// First found text gets set, rest gets appended. 

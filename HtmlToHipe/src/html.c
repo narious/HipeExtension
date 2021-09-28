@@ -227,6 +227,11 @@ static void handle_tag_a(GumboAttribute *a, int fd)
 	click_event_counter++;
 }
 
+static void write_tag_attr_class(GumboAttribute *a, int fd)
+{
+	dprintf(fd, "\thipe_send(session, HIPE_OP_TOGGLE_CLASS, 0, loc, 1, \"%s\");\n", a->value);
+}
+
 static void write_tag_attr(GumboElement *e, int fd)
 {
 	GumboAttribute *a;
@@ -240,6 +245,8 @@ static void write_tag_attr(GumboElement *e, int fd)
 			write_tag_src(a, fd);
 		else if (strcmp(a->name, "href") == 0 && e->tag == GUMBO_TAG_A)
 			handle_tag_a(a, fd);
+		else if (strcmp(a->name, "class") == 0 && e->tag)
+			write_tag_attr_class(a, fd);
 		else 
 			dprintf(fd, "\thipe_send(session, HIPE_OP_SET_ATTRIBUTE, 0, loc, 2, \"%s\", \"%s\");\n",
 				a->name, a->value);

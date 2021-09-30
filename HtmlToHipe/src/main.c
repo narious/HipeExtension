@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include "html.h"
 #include "events.h"
+#include "wd.h"
 
 // Setting a defualt source code directory, need to implment this later
 char * src_tag_directory ="../data/";
@@ -21,7 +22,8 @@ void write_includes(int fd)
 	dprintf(fd, "\n");
 }
 
-void write_handle_link_events(int fd) {
+void write_handle_link_events(int fd) 
+{
 	dprintf(fd, "void handle_link_events(hipe_session session, hipe_instruction instr)\n");
 	dprintf(fd, "{\n");
 	// Currently only weblinks gwill work
@@ -31,7 +33,8 @@ void write_handle_link_events(int fd) {
 	dprintf(fd, "}\n\n");
 }
 
-void write_hipe_apply_defualt_styles(int fd) {
+void write_hipe_apply_defualt_styles(int fd) 
+{
 	dprintf(fd, "void hipe_apply_defualt_styles(hipe_session session)\n");
 	dprintf(fd, "{\n");
 	dprintf(fd, "\thipe_send(session, HIPE_OP_ADD_STYLE_RULE, 0, 0, 2, \"a\", \"color:rgb(6,69,173);text-decoration:underline; text-decoration-color: rgb(6,69,173);\");\n");
@@ -86,15 +89,12 @@ void write_filesz_func(int fd)
 void write_tag_src_handler(int fd) 
 {
 	write_filesz_func(fd);
-	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char *filesource, char *mime)\n");
+	dprintf(fd, "void handle_tag_src(hipe_session session, hipe_loc loc, const char *fpath, char *mime)\n");
 	dprintf(fd, "{\n");
-	dprintf(fd, "\tchar fpath[50];\n");
 	dprintf(fd, "\tFILE *f;\n");
 	dprintf(fd, "\tint fsz, res;\n");
 	dprintf(fd, "\tchar *s;\n");
 	dprintf(fd, "\thipe_instruction instr;\n");
-	dprintf(fd, "\tstrcat(fpath, \"%s\");\n", src_tag_directory);
-	dprintf(fd, "\tstrcat(fpath, filesource);\n");
 	dprintf(fd, "\tf = fopen(fpath, \"r\");\n");
 	dprintf(fd, "\tif (!f) {\n");
 	dprintf(fd, "\t\tperror(fpath);\n");  // TODO check null term on fpath?
@@ -126,14 +126,18 @@ void write_tag_src_handler(int fd)
  *	instructions to a file
  * @g: gumbo output with 
  */
-void mygumbo_write_hipe(GumboOutput *g, int fd, char *html)
+void mygumbo_write_hipe(GumboOutput *g, int fd, char *html, char *html_fpath)
 {
+	wdinit(html_fpath);
+
 	write_includes(fd);
 	write_tag_src_handler(fd);
 	write_hipe_apply_defualt_styles(fd);
-	mygumbo_write_html(g->root, fd, html);  // TODO rename
+	mygumbo_write_html(g->root, fd, html); 
 	write_handle_link_events(fd);
 	write_main(fd);
+
+	wdfree();
 }
 
 /**
@@ -190,7 +194,7 @@ void html_to_hipe(char *fpath)
 	// TODO how does gumbo parse a string, does it stop at a null term character
 	// or some other special delimiter?
 	g = gumbo_parse(html);  // TODO handle errors
-	mygumbo_write_hipe(g, STDOUT_FILENO, html);
+	mygumbo_write_hipe(g, STDOUT_FILENO, html, fpath);
 
 	gumbo_destroy_output(&kGumboDefaultOptions, g);
 	free(html);  // Free last since buffer is supposed to live as long as gumbo is used.

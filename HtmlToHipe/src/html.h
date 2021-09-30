@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include "str.h"
 #include "events.h"
+#include "wd.h"
 
 extern struct click_event click_events[BUFSIZ];
 extern int click_event_counter;

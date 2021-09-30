@@ -173,12 +173,12 @@ static void write_tag_src(GumboAttribute* a, int fd)
 	if (*filesource == '\0') 
 		return;
 
-	// Gets extension form the file
+	// Gets extension from the file
 	const char* dot = strrchr(filesource, '.');
 	if (!dot || dot == filesource) 
 		return;
 	dot++;
-	//Determine the correct mime (currently only 5 are supported TODO: write more)
+	// Determine the correct mime (currently only 5 are supported TODO: write more)
 	char mime[25];
 	if (strcmp(dot, "mp3") == 0) 
 		strncpy(mime, "audio/mp3", 25);
@@ -194,7 +194,9 @@ static void write_tag_src(GumboAttribute* a, int fd)
 		strncpy(mime, "video/wbm", 25);
 	else 
 		strncpy(mime, "", 25);
-	dprintf(fd, "\thandle_tag_src(session, loc, \"%s\", \"%s\");\n", filesource, mime);
+	wdpushcat(filesource);
+	dprintf(fd, "\thandle_tag_src(session, loc, \"%s\", \"%s\");\n", htmlwd, mime);
+	wdpopcat();
 }
 
 static void write_tag_attr_inline_css(GumboAttribute *a, int fd)
@@ -223,7 +225,10 @@ static void handle_tag_a(GumboAttribute *a, int fd)
 	dprintf(fd, "\thipe_send(session, HIPE_OP_EVENT_REQUEST, %d, loc, 2, \"click\", \"\");\n", click_event_counter);
 
 	// Creating struct to be later handled in event handler function
-	c_event.href = a->value;
+	wdpushcat(a->value);
+	c_event.href = strdup(htmlwd);  // TODO this needs to be freed later on
+	wdpopcat();
+
 	c_event.key = click_event_counter;
 	click_events[click_event_counter] = c_event;
 	click_event_counter++;
@@ -436,8 +441,11 @@ static void handle_head_tag_link(GumboElement *e, int fd)
 		if (strcmp(a->name, "href") == 0)
 			fpath = a->value;
 	}
-	if (fnd && fpath)
-		dprintf(fd, "\thipe_send(session, HIPE_OP_IMPORT_CSS, 0, 0, 2, \"%s\", \"0\");\n", fpath);
+	if (fnd && fpath) {
+		wdpushcat(fpath);
+		dprintf(fd, "\thipe_send(session, HIPE_OP_IMPORT_CSS, 0, 0, 2, \"%s\", \"0\");\n", htmlwd);
+		wdpopcat();
+	}
 }
 
 static void handle_head_elem(GumboElement *e, int fd, char *html)

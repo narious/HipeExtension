@@ -1,6 +1,6 @@
-OBJS=build/main.o build/html.o build/str.o
+OBJS=build/main.o build/html.o build/str.o build/wd.o
 CC=gcc
-CFLAGS=-c
+CFLAGS=-c -g
 LFLAGS=-lgumbo
 
 htmltohipe: $(OBJS)

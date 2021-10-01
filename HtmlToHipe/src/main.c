@@ -8,9 +8,6 @@
 #include "events.h"
 #include "wd.h"
 
-// Setting a defualt source code directory, need to implment this later
-char * src_tag_directory ="../data/";
-
 void write_includes(int fd)
 {
 	// Print all on separate lines to make it clearer what's happening.

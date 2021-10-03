@@ -1,0 +1,275 @@
+/* Allows logo to be aligned to the left */
+.mdl-layout__header-row {
+    padding-left: 0px;
+    z-index: 10;
+}
+
+/* add to do item form input styling */
+#addToDo input {
+    height: 30px;
+    width: 360px;
+    margin-left: calc(50% - 230px);
+    margin-right: 15px;
+    background-color: #d9d9d9;
+    border-style: solid;
+    border-color: coral;
+    color: black;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 20px;
+    border-radius: 3px;
+}
+
+/* add to do item button styling */
+button {
+    border-radius: 3px;
+    height: 30px;
+    width: 80px;
+    top: -3px;
+    position: relative;
+    background-color: coral;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    color: white;
+    font-size: 15px;
+    border-color: #c96540;
+    border-style: solid;
+    border-width: 2px;
+    transition: all 0.5s;
+}
+
+button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}  
+
+button span:after {
+    content: '\002b';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+button:hover span {
+    padding-right: 25px;
+}
+  
+button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+
+button:hover {
+    box-shadow: 0px 7px 12px -2.5px rgba(0, 0, 0, 0.438);
+    transform: scale(1.05);
+}
+
+button:active {
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.438);
+    transition: 0.2s;
+    transform: scale(0.95);
+}
+
+/* to do list styling */
+#toDoList {
+    margin-top: 40px;
+}
+
+/* to do list formatting */
+.itemLabel {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    height: 50px;
+    font-size: 30px;
+    font-family: 'Trebuchet MS', sans-serif;
+    color: black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide default checkboxes */
+.itemLabel input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    margin-left: 20px;
+}
+
+/* custom checkbox */
+.todoCheck {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+}
+
+/* hover grey */
+.itemLabel:hover input ~ .todoCheck {
+    background-color: #ccc;
+}
+
+/* Checkbox background (when checked) */
+.itemLabel input:checked ~ .todoCheck {
+    background-color: coral;
+
+}
+
+/* crosses item off list when checkbox is checked */
+.itemLabel.crossed {
+    text-decoration: line-through;
+    text-decoration-color: black;
+    color: grey;
+}
+
+/* mark (hidden when not checked) */
+.todoCheck:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* mark when checked */
+.itemLabel input:checked ~ .todoCheck:after {
+    display: block;
+}
+
+/* checkbox styling */
+.itemLabel .todoCheck:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+/* cross out item when hover */
+.itemLabel:hover {
+    text-decoration: line-through;
+    text-decoration-color: black;
+    color: gray;
+}
+/* to do list area main styling */
+#toDo {
+    min-height: 250px;
+    max-height: 600px;
+    width: 500px;
+    margin-left: calc(50% - 270px);
+    margin-top: 25px;
+    padding: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: white;
+    opacity: 0.9;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    z-index: 100;
+}
+
+#headingDiv {
+    font-family: Garamond, serif;
+    text-align: center;
+    color: white;
+    width: 500px;
+    margin-left: calc(50% - 270px);
+    margin-top: 25px;
+    padding: 10px;
+    border-radius: 15px;
+    overflow: hidden;
+    opacity: 0.99;
+    z-index: 100;
+}
+
+#pageHeading {
+    font-size: 40px; 
+    color: white; 
+    text-align: center; 
+}
+
+img {
+    width: 110%;
+    height: 100%;
+    position: fixed;
+    left:-65px;
+    top:0;
+}
+
+/*attributes for crossfade transition between background images */
+.fadein img {
+    background-position: center;
+    background-repeat: no-repeat;
+    -webkit-animation-name: fade;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-duration: 70s;
+    animation-name: fade;
+    animation-iteration-count: infinite;
+    animation-duration: 70s;
+    z-index: 0;
+}
+
+/* opacity transition */
+@-webkit-keyframes fade {
+    0% {opacity: 0;}
+    5% {opacity: 1;}
+    10% {opacity: 1;}
+    20% {opacity: 0;}
+    60% {opacity: 0;}
+    100% {opacity: 0;}
+}
+
+/* opacity transition */
+@keyframes fade {
+    0% {opacity: 1;}
+    5% {opacity: 1;}
+    10% {opacity: 1;}
+    20% {opacity: 0;}
+    60% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+/* staggered times so images appear one after another */
+#f1 {
+    -webkit-animation-delay: -70s;
+}
+#f2 {
+    -webkit-animation-delay: -63s;
+}
+#f3 {
+    -webkit-animation-delay: -56s;
+}
+#f4 {
+    -webkit-animation-delay: -49s;
+}
+#f5 {
+    -webkit-animation-delay: -42s;
+}
+#f6 {
+    -webkit-animation-delay: -35s;
+}
+#f7 {
+    -webkit-animation-delay: -28s;
+}
+#f8 {
+    -webkit-animation-delay: -21s;
+}
+#f9 {
+    -webkit-animation-delay: -14s;
+}
+#f10 {
+    -webkit-animation-delay: -7s;
+}
+

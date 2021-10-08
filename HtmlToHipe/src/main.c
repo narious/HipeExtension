@@ -163,7 +163,7 @@ char *falloc(int fd)
 
 	fsz  = filesz(fd);
 	lseek(fd, 0, SEEK_SET);
-	// TODO add null term until determine whether it's needed
+	// TODO need null term?
 	s = malloc((fsz+1)*sizeof(char));  
 	read(fd, (void *)s, fsz);
 	s[fsz] = '\0';
@@ -173,7 +173,7 @@ char *falloc(int fd)
 	return s;
 }
 
-void html_to_hipe(char *fpath)
+void html_to_hipe(char *prgname, char *fpath)
 {
 	int fd;
 	char *html;
@@ -188,9 +188,15 @@ void html_to_hipe(char *fpath)
 
 	html = falloc(fd);
 	close(fd);
-	// TODO how does gumbo parse a string, does it stop at a null term character
-	// or some other special delimiter?
-	g = gumbo_parse(html);  // TODO handle errors
+	g = gumbo_parse(html); 
+
+	// If there's at least one error report the number of errors encountered.
+	// Still continue creating the Hipe client file though because it will still
+	// be able to generate some useful output.
+	// Errors can't be handled properly currently because GumboError isn't a part
+	// of the public gumbo parser API.
+	if (g->errors.length)
+		fprintf(stderr, "%s: %s: %d gumbo parser errors\n", prgname, fpath, g->errors.length);
 	mygumbo_write_hipe(g, STDOUT_FILENO, html, fpath);
 
 	gumbo_destroy_output(&kGumboDefaultOptions, g);
@@ -200,6 +206,6 @@ void html_to_hipe(char *fpath)
 int main(int argc, char *argv[])
 {
 	for (int i = 1; i < argc; ++i) 
-		html_to_hipe(argv[i]);
+		html_to_hipe(argv[0], argv[i]);
 	return 0;
 }
